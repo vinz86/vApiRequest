@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject } from 'vue'
-
+import { showReadme } from 'vapirequest';
 const api: any = inject('api');
 const useApiStore: any = inject('useApiStore');
 
@@ -56,6 +56,6 @@ provaModuloHttpStore();
 
 <template>
   <main>
-    &nbsp;
+    <div v-html="showReadme()" />
   </main>
 </template>
