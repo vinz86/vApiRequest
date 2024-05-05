@@ -1,5 +1,5 @@
 # Documentazione
-Centralizza la gestione delle chiamate API nel progetto Vue.js.
+Centralizza la gestione delle chiamate API nel progetto Vue.js. 
 
 E' possibile configurare le chiamate API, gestire gli endpoint e utilizzare diversi client HTTP come Axios o Fetch.
 
@@ -11,8 +11,6 @@ In seguito bisogna installare il plugin del pacchetto in main.ts (o main.js).
 import { createApp } from 'vue';
 import App from './App.vue';
 import ApiPlugin from 'il-tuo-pacchetto';
-import { moduloDinamico } from '@/modules/moduloDinamico/ModuloDinamico.module'
-import { moduloDinamicoEndpoints } from '@/modules/moduloDinamico/ModuloDinamico.endpoints'
 
 const app = createApp(App);
 
@@ -22,14 +20,13 @@ app.use(ApiPlugin, {
   useStore: false,
   apiBaseUrl: { dev: 'http://localhost:5173', test: 'http://localhost:5173', prod: 'http://localhost:5173' },
   apiPrefix: { dev: '', test: '', prod: '' },
-  modules: [{ name: 'moduloDinamico', module: moduloDinamico, endpoints: moduloDinamicoEndpoints }] // facoltativi
 });
 
 app.mount('#app');
 ```
 
 ## Utilizzo
-Una volta installato il plugin, è possibile utilizzare le funzionalità dell'API ovunque nell'applicazione.
+Una volta installato il plugin, è possibile utilizzare le funzionalità dell'API ovunque nell'applicazione. 
 Ecco un esempio di come utilizzare l'API nei componenti Vue:
 
 ``` typescript
@@ -46,6 +43,13 @@ const fetchData = async () => {
     console.error(error);
   }
 };
+```
+
+```typescript
+// esempio con modulo todos
+const api: any = inject('api');
+
+let response = await api.todos.getTodo();
 ```
 
 ## Modifica configurazione
@@ -70,7 +74,7 @@ api.setDefaultEnvironment('dev'); // dev | test | prod
 ```
 
 ## Moduli
-Si possono usare diversi moduli per gestire le funzionalità delle chiamate API.
+Si possono usare diversi moduli per gestire le funzionalità delle chiamate API. 
 
 ### http
 Il modulo http fornisce metodi per effettuare chiamate HTTP CRUD.
@@ -84,35 +88,42 @@ Il modulo http fornisce metodi per effettuare chiamate HTTP CRUD.
 * delete(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP DELETE.
 ```
 
-### Moduli Dinamici
-E' possibile creare ulteriori moduli dinamici e diversificare gli endpoints in base all'ambiente:
+### Altri Moduli
+E' possibile creare ulteriori moduli e diversificare gli endpoints in base all'ambiente:
 
-Dopo aver creato un uovo modulo è necessario aggiungerlo in main.ts:
+Dopo aver creato un uovo modulo è necessario importarlo ed utilizzarlo in Api.ts:
 
 ```typescript
-app.use(ApiPlugin, {
-  defaultClient: 'axios',
-  defaultEnvironment: 'dev',
-  useStore: false,
-  apiBaseUrl: { dev: 'http://localhost:5173', test: 'http://localhost:5173', prod: 'http://localhost:5173' },
-  apiPrefix: { dev: '', test: '', prod: '' },
-  modules: [
-    { name: 'moduloDinamico', 
-      module: moduloDinamico, 
-      endpoints: moduloDinamicoEndpoints // facoltativo
-    }  // nuovo modulo e endpoints dinamici
-    ]
-});
+import { nuovoModulo } from './modules/nuovoModulo/nuovoModulo.module';
+export const api = {
+  // ...
 
+  // Aggiungo i moduli all'oggetto api
+  nuovoModulo,
+  http
+
+};
+```
+
+Se il modulo ha un file con gli endpoints bisogna importarlo in ApiEndpoints.ts.
+N.B. Il file con gli endpoints separato non è indispensabile!
+
+```typescript
+import { nuovoModuloEndpoints } from '@/services/modules/nuovoModulo/nuovoModulo.endpoints'
+
+export const nuovoModuloEndpoints: Endpoint = {
+  //...
+  ...nuovoModuloEndpoints
+};
 ```
 
 ### Esempio di modulo
 
 ```typescript
 // /modules/Todos.module.ts
-import { api } from 'vApiRequest/src/Api'
-import type { HttpModuleRequestConfig } from 'vApiRequest/src/ApiModels'
-import type { ApiResponse } from 'vApiRequest/src/ApiModels'
+import { api } from '@/services/Api'
+import type { HttpModuleRequestConfig } from '@/services/ApiModels'
+import type { ApiResponse } from '@/services/ApiModels'
 
 export const todos = {
 
@@ -134,9 +145,9 @@ export const todos = {
 
 ``` typescript
 // /modules/Todos.endpoints.ts
-import type { Endpoints } from 'vApiRequest/src/ApiModels'
+import type { Endpoint } from '@/services/ApiModels'
 
-export const todosEndpoints: Endpoints = {
+export const todosEndpoints: Endpoint = {
   getTodo: {
     dev: 'todos/{id}',
     test: 'todos/{id}',
@@ -145,14 +156,7 @@ export const todosEndpoints: Endpoints = {
 };
 ```
 
-```typescript
-// esempio con modulo todos
-const api: any = inject('api');
-
-let response = await api.todos.getTodo();
-```
-
-## Store
+## Store 
 Il pacchetto include uno store per memorizzare i dati delle chiamate API in modo persistente.
 
 ### Utilizzo dello Store
