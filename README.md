@@ -1,61 +1,182 @@
-# vApiRequest
+# Documentazione ApiPlugin
+Centralizza la gestione delle chiamate API nel progetto Vue.js. 
 
-This template should help get you started developing with Vue 3 in Vite.
+E' possibile configurare le chiamate API, gestire gli endpoint e utilizzare diversi client HTTP come Axios o Fetch.
 
-## Recommended IDE Setup
+## Configurazione
+Per iniziare, è necessario installare i pacchetti axios e pinia seguendo le relative documentazioni.
+In seguito bisogna installare il plugin del pacchetto in main.ts (o main.js).
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+``` typescript
+import { createApp } from 'vue';
+import App from './App.vue';
+import ApiPlugin from 'il-tuo-pacchetto';
 
-## Type Support for `.vue` Imports in TS
+const app = createApp(App);
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+app.use(ApiPlugin, {
+  defaultClient: 'axios',
+  defaultEnvironment: 'dev',
+  useStore: false,
+  apiBaseUrl: { dev: 'http://localhost:5173', test: 'http://localhost:5173', prod: 'http://localhost:5173' },
+  apiPrefix: { dev: '', test: '', prod: '' },
+});
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+app.mount('#app');
 ```
 
-### Compile and Hot-Reload for Development
+## Utilizzo
+Una volta installato il plugin, è possibile utilizzare le funzionalità dell'API ovunque nell'applicazione. 
+Ecco un esempio di come utilizzare l'API nei componenti Vue:
 
-```sh
-npm run dev
+``` typescript
+import { inject } from 'vue';
+
+const useApiStore: any = inject('useApiStore');
+const api: any = inject('api');
+
+const fetchData = async () => {
+  try {
+    const response = await api.http.get('/endpoint');
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
 ```
 
-### Type-Check, Compile and Minify for Production
+```typescript
+// esempio con modulo todos
+const api: any = inject('api');
 
-```sh
-npm run build
+let response = await api.todos.getTodo();
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+## Modifica configurazione
 
-```sh
-npm run test:unit
+E' possibile modificare le configurazioni dell'API in questo modo:
+
+```typescript
+const api: any = inject('api');
+api.setUseStore(true);
+api.setApiPrefix({  //con slash iniziale
+  dev: '', 
+  test: '', 
+  prod: '/test-prefix' 
+});
+api.setApiBaseUrl({  //senza slash finale
+  dev: '',
+  test: '',
+  prod: 'http://localhost:80'
+});
+api.setDefaultClient('axios'); // axios | fetch
+api.setDefaultEnvironment('dev'); // dev | test | prod
 ```
 
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+## Moduli
+Si possono usare diversi moduli per gestire le funzionalità delle chiamate API. 
 
-```sh
-npm run test:e2e:dev
+### http
+Il modulo http fornisce metodi per effettuare chiamate HTTP CRUD.
+
+```
+* get(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP GET.
+* head(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP HEAD.
+* post(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP POST.
+* patch(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP PATCH.
+* put(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP PUT.
+* delete(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP DELETE.
 ```
 
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
+### Altri Moduli
+E' possibile creare ulteriori moduli e diversificare gli endpoints in base all'ambiente:
 
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+Dopo aver creato un uovo modulo è necessario importarlo ed utilizzarlo in Api.ts:
 
-```sh
-npm run build
-npm run test:e2e
+```typescript
+import { nuovoModulo } from './modules/nuovoModulo/nuovoModulo.module';
+export const api = {
+  // ...
+
+  // Aggiungo i moduli all'oggetto api
+  nuovoModulo,
+  http
+
+};
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+Se il modulo ha un file con gli endpoints bisogna importarlo in ApiEndpoints.ts.
+N.B. Il file con gli endpoints separato non è indispensabile!
 
-```sh
-npm run lint
+```typescript
+import { nuovoModuloEndpoints } from '@/services/modules/nuovoModulo/nuovoModulo.endpoints'
+
+export const nuovoModuloEndpoints: Endpoints = {
+  //...
+  ...nuovoModuloEndpoints
+};
 ```
+
+### Esempio di modulo
+
+```typescript
+// /modules/Todos.module.ts
+import { api } from '@/services/Api'
+import type { HttpModuleRequestConfig } from '@/services/ApiModels'
+import type { ApiResponse } from '@/services/ApiModels'
+
+export const todos = {
+
+  async getTodo<T>(config: HttpModuleRequestConfig = {}): Promise<ApiResponse<T>> {
+    const { queryParams = {}, pathParams = {}, headers = {}, module = 'todos' } = config;
+    return await api.request<T>({
+      endpoint: `/${api.getEndpoint("getTodo")}`,
+      method: 'GET',
+      queryParams: queryParams,
+      pathParams: pathParams,
+      data: null,
+      headers: headers,
+      module: module
+    });
+  },
+
+};
+```
+
+``` typescript
+// /modules/Todos.endpoints.ts
+import type { Endpoints } from '@/services/ApiModels'
+
+export const todosEndpoints: Endpoints = {
+  getTodo: {
+    dev: 'todos/{id}',
+    test: 'todos/{id}',
+    prod: 'todos/{id}',
+  }
+};
+```
+
+## Store 
+Il pacchetto include uno store per memorizzare i dati delle chiamate API in modo persistente.
+
+### Utilizzo dello Store
+Per utilizzare lo store, si può accedere alle funzionalità utilizzando l'hook useApiStore.
+
+```typescript
+const useApiStore: any = inject('useApiStore');
+
+useApiStore().setData({
+  module: 'todos',
+  endpoint: 'getTodo',
+  data: todoData,
+});
+
+useApiStore().getData({
+  module: 'todos',
+  endpoint: '/test/endpoint?param=1'
+});
+```
+
+## TODO
+* Gestione errori
+* Interceptors/Middlewares
