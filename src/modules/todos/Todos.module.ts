@@ -1,6 +1,6 @@
-import { api } from '../../../../vApiRequest_pkg/src/Api'
-import type { HttpModuleRequestConfig } from '../../../../vApiRequest_pkg/src/ApiModels'
-import type { ApiResponse } from '../../../../vApiRequest_pkg/src/ApiModels'
+import { api } from 'vapirequest/src/Api'
+import type { HttpModuleRequestConfig } from 'vapirequest/src/ApiModels'
+import type { ApiResponse } from 'vapirequest/src/ApiModels'
 
 export const todos = {
 
