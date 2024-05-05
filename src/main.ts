@@ -1,11 +1,14 @@
 import './assets/main.css'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import ApiPlugin from '@/services/ApiPlugin'
+import ApiPlugin from 'vapirequest/src/ApiPlugin'
+import { todos } from '@/modules/todos/Todos.module'
+import { courses } from '@/modules/courses/Courses.module'
+import { coursesEndpoints } from '@/modules/courses/Courses.endpoints'
+import { todosEndpoints } from '@/modules/todos/Todos.endpoints'
 
 const app = createApp(App)
 
@@ -18,6 +21,7 @@ app.use(ApiPlugin, {
   useStore: false,
   apiBaseUrl: { dev: 'http://localhost:5173', test: 'http://localhost:5173', prod: 'http://localhost:5173' }, // senza slash finale
   apiPrefix: { dev: '', test: '', prod: ''}, // con slash iniziale
+  modules: [{ name: 'courses', module: courses, endpoints: coursesEndpoints }, { name: 'todos', module: todos, endpoints: todosEndpoints }]
 });
 
 app.mount('#app')

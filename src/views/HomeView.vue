@@ -45,7 +45,6 @@ async function provaModuloHttpStore() {
     useApiStore().clearData('http')
     testStore = await useApiStore().getAllData('http')
     console.log('getAllData store after clear:', testStore);
-
   } catch (error) {
     console.error('Errore durante la chiamata:', error);
   }

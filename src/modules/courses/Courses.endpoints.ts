@@ -1,4 +1,4 @@
-import type { Endpoints } from '@/services/ApiModels'
+import type { Endpoints } from 'vapirequest/src/ApiModels'
 
 export const coursesEndpoints: Endpoints = {
   getCourses: {

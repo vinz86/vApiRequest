@@ -1,6 +1,6 @@
-import { api } from '@/services/Api'
-import type { HttpModuleRequestConfig } from '@/services/ApiModels'
-import type { ApiResponse } from '@/services/ApiModels'
+import { api } from 'vapirequest/src/Api'
+import type { HttpModuleRequestConfig } from 'vapirequest/src/ApiModels'
+import type { ApiResponse } from 'vapirequest/src/ApiModels'
 
 export const courses = {
 
