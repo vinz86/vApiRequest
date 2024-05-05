@@ -1,43 +1,18 @@
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type { ApiRequestConfig, ApiResponse, Endpoint } from './ApiModels'
+import type { ApiRequestConfig, ApiResponse} from './ApiModels'
 import { api } from './Api'
 import { useApiStore } from './ApiStore'
 
-function saveToStore( module: string, endpoint: string, data: any ): void{
-  if (useApiStore() && api.getUseStore() && module && endpoint && data) {
-    useApiStore().setData({
-      module: module,
-      endpoint: endpoint,
-      data: data
-    });
-  }
-}
-
-function replacePathParams(pathParams: any, endpoint: any): string{
-  if (pathParams && Object.keys(pathParams).length > 0){
-    Object.entries(pathParams).forEach(([key, value]) => {
-      endpoint = endpoint.replace(`{${key}}`, encodeURIComponent(value as string));
-    });
-  }
-  return endpoint
-}
-
-function replaceQueryParams(queryParams: any, endpoint: any): string{
-  if (queryParams && Object.keys(queryParams).length > 0){
-    const queryParamsString = new URLSearchParams(queryParams).toString();
-    endpoint = `${endpoint}?${queryParamsString}`;
-  }
-  return endpoint
-}
-
-//AXIOS
+// ================== AXIOS ==================
 export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
   const { method, data = null, pathParams = null, queryParams = null, headers = null, module = 'default', responseType, responseEncoding } = config;
   let { endpoint } = config;
 
   // Sostituisco i parametri nell'endpoint
-  endpoint = replacePathParams(pathParams, endpoint)
+  if (pathParams) {
+    endpoint = replacePathParams(pathParams, endpoint)
+  }
 
   // Effettuo richiesta
   const response: AxiosResponse<T> = await axios({
@@ -62,19 +37,23 @@ export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiRespo
     config: config
   };
 }
+// ================== FINE AXIOS ==================
 
-//FETCH
+// ================== FETCH ==================
 export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
 
   const { method, data = null, pathParams = null, queryParams = null, headers = { }, module = 'default', responseType = null } = config;
   let { endpoint } = config;
 
   // sostituisco i pathParams
-  endpoint =  replacePathParams(pathParams, endpoint);
+  if (pathParams) {
+    endpoint = replacePathParams(pathParams, endpoint)
+  }
 
   //  sostituisco i queryParams
-  endpoint =  replaceQueryParams(queryParams, endpoint);
-
+  if (queryParams) {
+    endpoint =  replaceQueryParams(queryParams, endpoint);
+  }
   const fetchOptions: RequestInit = {
     method: method,
     headers: headers
@@ -88,7 +67,7 @@ export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiRespo
   const fetchResponse = await fetch(`${api.getCurrentApiBaseUrl()}${api.getCurrentApiPrefix()}${endpoint}`, fetchOptions);
 
   // Estraggo i dati dalla risposta
-  let responseData: any = null;
+  let responseData: any;
   switch (responseType){
     case 'json':
       responseData = await fetchResponse.json(); break;
@@ -114,3 +93,37 @@ export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiRespo
     headers: fetchResponse.headers,
     config: config,
   };}
+// ================== FINE FETCH ==================
+
+
+// ================== METODI DI SUPPORTO ==================
+
+// Salva nello store
+function saveToStore( module: string, endpoint: string, data: any ): void{
+  if (useApiStore() && api.getUseStore() && module && endpoint && data) {
+    useApiStore().setData({
+      module: module,
+      endpoint: endpoint,
+      data: data
+    });
+  }
+}
+
+// restituisce l'endpoint con i pathParams
+function replacePathParams(pathParams: { }, endpoint: string): string{
+  if (pathParams && Object.keys(pathParams).length > 0){
+    Object.entries(pathParams).forEach(([key, value]) => {
+      endpoint = endpoint.replace(`{${key}}`, encodeURIComponent(value as string));
+    });
+  }
+  return endpoint
+}
+
+// restituisxce l'endpoint con la queryString
+function replaceQueryParams(queryParams: { }, endpoint: string): string{
+  if (queryParams && Object.keys(queryParams).length > 0){
+    const queryParamsString = new URLSearchParams(queryParams).toString();
+    endpoint = `${endpoint}?${queryParamsString}`;
+  }
+  return endpoint
+}

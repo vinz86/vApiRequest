@@ -1,7 +1,6 @@
 import { http } from './modules/Http.module';
 import type { ApiObject, ApiRequestConfig, ApiResponse, Endpoint, Environments } from './ApiModels'
 import { AxiosClient, FetchClient } from './ApiClients';
-import { useApiStore } from './ApiStore'
 
 let defaultClient: string = "axios";
 let defaultEnvironment: string = 'dev';

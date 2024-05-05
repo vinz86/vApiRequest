@@ -1,31 +1,32 @@
-interface Extension {
+interface ApiModule {
   name: string;
   module: any;
   endpoints: Record<string, any>;
 }
 
+// Registro globale dei moduli
 export class ApiModuleRegistry {
-  private static extensions: Record<string, Extension> = {};
+  private static modules: Record<string, ApiModule> = {};
 
   static register(name: string, module: any, endpoints: Record<string, any>): void {
-    if (ApiModuleRegistry.extensions[name]) {
-      throw new Error(`Extension with name ${name} is already registered.`);
+    if (ApiModuleRegistry.modules[name]) {
+      throw new Error(`Il modulo ${name} è già registrato.`);
     }
-    ApiModuleRegistry.extensions[name] = { name, module, endpoints };
+    ApiModuleRegistry.modules[name] = { name, module, endpoints };
   }
 
   static unregister(name: string): void {
-    if (!ApiModuleRegistry.extensions[name]) {
-      throw new Error(`Extension with name ${name} is not registered.`);
+    if (!ApiModuleRegistry.modules[name]) {
+      throw new Error(`Il modulo ${name} non è registrato.`);
     }
-    delete ApiModuleRegistry.extensions[name];
+    delete ApiModuleRegistry.modules[name];
   }
 
-  static getExtension(name: string): Extension | undefined {
-    return ApiModuleRegistry.extensions[name];
+  static getModule(name: string): ApiModule | undefined {
+    return ApiModuleRegistry.modules[name];
   }
 
-  static getAllExtensions(): Record<string, Extension> {
-    return { ...ApiModuleRegistry.extensions };
+  static getAllModules(): Record<string, ApiModule> {
+    return { ...ApiModuleRegistry.modules };
   }
 }

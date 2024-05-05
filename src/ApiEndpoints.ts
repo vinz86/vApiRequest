@@ -11,5 +11,4 @@ const staticEndpoints: Endpoint = {
 
 export const apiEndpoints: Endpoint = {
   ...staticEndpoints,
-  //...dynamicEndpoints,
 };

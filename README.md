@@ -176,3 +176,4 @@ useApiStore().getData({
 ## TODO
 * Gestione errori
 * Interceptors/Middlewares
+* Store per chiamate POST: gestire i parametri
