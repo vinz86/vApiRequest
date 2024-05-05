@@ -15,14 +15,6 @@ export interface ApiRequestConfig {
   responseEncoding?: string;
 }
 
-// Interfaccia per le risposte delle chiamate API
-// export interface ApiResponse {
-//   data: any;
-//   status: number;
-//   statusText: string;
-//   headers: any;
-//   config: ApiRequestConfig;
-// }
 // Definizione di ApiResponse generico
 export interface ApiResponse<T = any> {
   data: T;

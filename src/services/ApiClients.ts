@@ -70,7 +70,6 @@ export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiRespo
     fetchOptions.body = JSON.stringify(data);
   }
 
-  // Eseguo la richiesta utilizzando fetch
   const fetchResponse = await fetch(`${api.getCurrentApiBaseUrl()}${api.getCurrentApiPrefix()}${endpoint}`, fetchOptions);
 
   // Estraggo i dati dalla risposta
@@ -98,7 +97,6 @@ export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiRespo
     });
   }
 
-  // Restituisco la risposta
   return {
     data: responseData,
     status: fetchResponse.status,
