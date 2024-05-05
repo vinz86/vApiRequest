@@ -3,9 +3,8 @@ Centralizza la gestione delle chiamate API nel progetto Vue.js.
 
 E' possibile configurare le chiamate API, gestire gli endpoint e utilizzare diversi client HTTP come Axios o Fetch.
 
-## Configurazione
-Per iniziare, è necessario installare i pacchetti axios e pinia seguendo le relative documentazioni.
-In seguito bisogna installare il plugin del pacchetto in main.ts (o main.js).
+## Installazione e Configurazione
+Installare il pacchetto 'vApiRequest' ed aggiungere il plugin del pacchetto in main.ts (o main.js).
 
 ``` typescript
 import { createApp } from 'vue';
@@ -28,7 +27,7 @@ app.use(ApiPlugin, {
 app.mount('#app');
 ```
 
-## Utilizzo
+## Esempio di utilizzo
 Una volta installato il plugin, è possibile utilizzare le funzionalità dell'API ovunque nell'applicazione.
 Ecco un esempio di come utilizzare l'API nei componenti Vue:
 
@@ -48,9 +47,9 @@ const fetchData = async () => {
 };
 ```
 
-## Modifica configurazione
+### Modifica configurazione
 
-E' possibile modificare le configurazioni dell'API in questo modo:
+E' possibile modificare le configurazioni dell'API in runtime:
 
 ```typescript
 const api: any = inject('api');
@@ -67,6 +66,10 @@ api.setApiBaseUrl({  //senza slash finale
 });
 api.setDefaultClient('axios'); // axios | fetch
 api.setDefaultEnvironment('dev'); // dev | test | prod
+
+// ... chiamate api
+
+// ..nuova modifica configurazione
 ```
 
 ## Moduli
@@ -84,12 +87,39 @@ Il modulo http fornisce metodi per effettuare chiamate HTTP CRUD.
 * delete(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP DELETE.
 ```
 
-### Moduli Dinamici
-E' possibile creare ulteriori moduli dinamici e diversificare gli endpoints in base all'ambiente:
+```typescript
+// esempio
+const api: any = inject('api');
 
-Dopo aver creato un uovo modulo è necessario aggiungerlo in main.ts:
+const configRequest = {
+  method?: 'GET' | 'HEAD' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
+  data?: any;
+  queryParams?: {};
+  pathParams?: {};
+  headers?: {};
+  module?: string; // nome del modulo, es. 'nomemodulo' (per salvare nello store)
+  responseType?: string;
+  responseEncoding?: string; // solo per axios
+}
+let response = await api.http.get('/endpoint', configRequest);
+```
+
+### Moduli Aggiuntivi
+E' possibile creare ulteriori moduli aggiuntivi e diversificare gli endpoints in base all'ambiente.
+I moduli possono essere creati in ogni cartella, ogni modulo deve contenere il file principale del modulo e gli endpoints (facoltativi):
+
+```
+// esempio
+/modules/API/nomemodulo/Nomemodulo.module.ts (o .js)
+/modules/API/nomemodulo/Nomemodulo.endpoints.ts (o .js)
+```
+
+#### Importazione dei moduli
+I moduli possono essere importati in main.ts (o .js) nella sezione del Plugin.
 
 ```typescript
+// ... importare moduloDinamico e moduloDinamicoEndpoints
+
 app.use(ApiPlugin, {
   defaultClient: 'axios',
   defaultEnvironment: 'dev',
@@ -103,16 +133,16 @@ app.use(ApiPlugin, {
     }  // nuovo modulo e endpoints dinamici
     ]
 });
-
 ```
 
 ### Esempio di modulo
 
+#### Modulo
 ```typescript
 // /modules/Todos.module.ts
-import { api } from 'vApiRequest/src/Api'
-import type { HttpModuleRequestConfig } from 'vApiRequest/src/ApiModels'
-import type { ApiResponse } from 'vApiRequest/src/ApiModels'
+import { api } from 'vapirequest/Api'
+import type { HttpModuleRequestConfig } from 'vapirequest/ApiModels'
+import type { ApiResponse } from 'vapirequest/ApiModels'
 
 export const todos = {
 
@@ -131,10 +161,10 @@ export const todos = {
 
 };
 ```
-
+##### Endpoints (facoltativo)
 ``` typescript
 // /modules/Todos.endpoints.ts
-import type { Endpoints } from 'vApiRequest/src/ApiModels'
+import type { Endpoints } from 'vapirequest/ApiModels'
 
 export const todosEndpoints: Endpoints = {
   getTodo: {
@@ -145,10 +175,9 @@ export const todosEndpoints: Endpoints = {
 };
 ```
 
+#### Esempio di utilizzo
 ```typescript
-// esempio con modulo todos
 const api: any = inject('api');
-
 let response = await api.todos.getTodo();
 ```
 
