@@ -1,6 +1,6 @@
-import type { Endpoints } from '../../../../vApiRequest_pkg/src/ApiModels'
+import type { Endpoint } from '../../../src/ApiModels'
 
-export const todosEndpoints: Endpoints = {
+export const todosEndpoints: Endpoint = {
   getTodo: {
     dev: 'todos/{id}',
     test: 'todos/{id}',

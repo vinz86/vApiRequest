@@ -118,6 +118,7 @@ export const nuovoModuloEndpoints: Endpoint = {
 ```
 
 ### Esempio di modulo
+Nella cartella examples è possibile trovare un modulo di esempio (aggiornare i puntamenti degli import)
 
 ```typescript
 // /modules/Todos.module.ts
