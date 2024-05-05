@@ -31,24 +31,23 @@ const ApiPlugin = {
       api.setApiPrefix(options.apiPrefix);
     }
 
-    // Aggiungiamo i moduli forniti nell'opzione modules
+    // moduli dell'opzione modules
     if (options && options.modules) {
       options.modules.forEach(async (module) => {
         api[module.name] = module.module;
 
         // Controllo se il modulo ha endpoint definiti
         if (module.endpoints) {
-          // Aggiungiamo gli endpoint alla raccolta globale
+          // Aggiungio gli endpoint alla raccolta globale
           let newEndpoints = { ...api.getEndpoints(), ...module.endpoints};
           api.setEndpoints(newEndpoints);
         }
 
-        // Aggiungiamo il modulo al registro delle estensioni
+        // Aggiungo il modulo al registro delle estensioni
         ApiModuleRegistry.register(module.name, module.module, module.endpoints);
       });
     }
 
-    // Esponiamo l'oggetto API e lo store API sull'oggetto globale dell'applicazione
     app.config.globalProperties.$api = api;
     app.config.globalProperties.$useApiStore = useApiStore;
     app.provide('api', app.config.globalProperties.$api);

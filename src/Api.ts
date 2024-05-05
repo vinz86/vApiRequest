@@ -95,7 +95,7 @@ export const api: ApiObject = {
       } else if (this.getDefaultClient() === "fetch") {
         return await FetchClient<T>(config);
       } else {
-        return await AxiosClient<T>(config);
+        return await FetchClient<T>(config);
       }
     } catch (error: any) {
       throw new Error(`Errore nella richiesta API: ${error}`);
