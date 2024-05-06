@@ -5,7 +5,7 @@ const api: any = inject('api');
 const useApiStore: any = inject('useApiStore');
 
 // Prova Http con store
-async function provaModuloHttpStore() {
+async function testApi() {
   try {
     api.setUseStore(true);
     api.setDefaultClient('fetch')
@@ -45,12 +45,17 @@ async function provaModuloHttpStore() {
     useApiStore().clearData('http')
     testStore = await useApiStore().getAllData('http')
     console.log('getAllData store after clear:', testStore);
+
+    // Simulo errore richiesta
+    api.setApiBaseUrl({test:"", prod:'', dev: 'https://urlerrato.local' });
+    await api.todos.getTodo({pathParams: { id: 1 }});
+
   } catch (error) {
     console.error('Errore durante la chiamata:', error);
   }
 }
 
-provaModuloHttpStore();
+testApi();
 
 </script>
 
