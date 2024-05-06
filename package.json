@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "pinia": "^2.1.7",
+    "vapirequest": "github:vinz86/vApiRequest#npm_pkg",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0",
-    "vapirequest": "git+https://github.com/vinz86/vApiRequest#master"
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
