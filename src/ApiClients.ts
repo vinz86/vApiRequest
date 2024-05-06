@@ -6,105 +6,93 @@ import { useApiStore } from './ApiStore'
 
 // ================== AXIOS ==================
 export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
-  try{
-    const { method, data = null, pathParams = null, queryParams = null, headers = null, module = 'default', responseType, responseEncoding } = config;
-    let { endpoint } = config;
+  const { method, data = null, pathParams = null, queryParams = null, headers = null, module = 'default', responseType, responseEncoding } = config;
+  let { endpoint } = config;
 
-    // Sostituisco i parametri nell'endpoint
-    if (pathParams) {
-      endpoint = replacePathParams(pathParams, endpoint)
-    }
-
-    // Effettuo richiesta
-    const response: AxiosResponse<T> = await axios({
-      method: method,
-      url: `${api.getCurrentApiBaseUrl()}${api.getCurrentApiPrefix()}${endpoint}`,
-      params: queryParams,
-      data: data,
-      headers: headers,
-      responseType: responseType as any,
-      responseEncoding: responseEncoding
-    });
-
-    // Salva nello store (se abilitato)
-    saveToStore( module, endpoint, response.data);
-
-    // restituisco la risposa
-    return {
-      data: response.data,
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-      config: config
-    };
+  // Sostituisco i parametri nell'endpoint
+  if (pathParams) {
+    endpoint = replacePathParams(pathParams, endpoint)
   }
-  catch(error){
-      debugger
-    throw error;
-  }
+
+  // Effettuo richiesta
+  const response: AxiosResponse<T> = await axios({
+    method: method,
+    url: `${api.getCurrentApiBaseUrl()}${api.getCurrentApiPrefix()}${endpoint}`,
+    params: queryParams,
+    data: data,
+    headers: headers,
+    responseType: responseType as any,
+    responseEncoding: responseEncoding
+  });
+
+  // Salva nello store (se abilitato)
+  saveToStore( module, endpoint, response.data);
+
+  // restituisco la risposa
+  return {
+    data: response.data,
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+    config: config
+  };
 }
 // ================== FINE AXIOS ==================
 
 // ================== FETCH ==================
 export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
-  try {
-    const { method, data = null, pathParams = null, queryParams = null, headers = { }, module = 'default', responseType = null } = config;
-    let { endpoint } = config;
 
-    // sostituisco i pathParams
-    if (pathParams) {
-      endpoint = replacePathParams(pathParams, endpoint)
-    }
+  const { method, data = null, pathParams = null, queryParams = null, headers = { }, module = 'default', responseType = null } = config;
+  let { endpoint } = config;
 
-    //  sostituisco i queryParams
-    if (queryParams) {
-      endpoint =  replaceQueryParams(queryParams, endpoint);
-    }
-    const fetchOptions: RequestInit = {
-      method: method,
-      headers: headers
-    };
-
-    // Se è GET o HEAD non mando il body
-    if (data && method!=="GET" && method !=="HEAD") {
-      fetchOptions.body = JSON.stringify(data);
-    }
-
-    const fetchResponse = await fetch(`${api.getCurrentApiBaseUrl()}${api.getCurrentApiPrefix()}${endpoint}`, fetchOptions);
-
-    // Estraggo i dati dalla risposta
-    let responseData: any;
-    switch (responseType){
-      case 'json':
-        responseData = await fetchResponse.json(); break;
-      case 'xml':
-        responseData = await fetchResponse.text(); break;
-      case 'arraybuffer':
-        responseData = await fetchResponse.arrayBuffer(); break;
-      case 'blob':
-        responseData = await fetchResponse.blob(); break;
-      case 'formdata':
-        responseData = await fetchResponse.formData(); break;
-      default: // json
-        responseData = await fetchResponse.json();
-    }
-
-    // Salva nello store (se abilitato)
-    saveToStore( module, endpoint, responseData);
-debugger
-    return {
-      data: responseData,
-      status: fetchResponse.status,
-      statusText: fetchResponse.statusText,
-      headers: fetchResponse.headers,
-      config: config,
-    };
+  // sostituisco i pathParams
+  if (pathParams) {
+    endpoint = replacePathParams(pathParams, endpoint)
   }
-  catch (error) {
-      debugger
-    throw error;
+
+  //  sostituisco i queryParams
+  if (queryParams) {
+    endpoint =  replaceQueryParams(queryParams, endpoint);
   }
-}
+  const fetchOptions: RequestInit = {
+    method: method,
+    headers: headers
+  };
+
+  // Se è GET o HEAD non mando il body
+  if (data && method!=="GET" && method !=="HEAD") {
+    fetchOptions.body = JSON.stringify(data);
+  }
+
+  const fetchResponse = await fetch(`${api.getCurrentApiBaseUrl()}${api.getCurrentApiPrefix()}${endpoint}`, fetchOptions);
+
+  // Estraggo i dati dalla risposta
+  let responseData: any;
+  switch (responseType){
+    case 'json':
+      responseData = await fetchResponse.json(); break;
+    case 'xml':
+      responseData = await fetchResponse.text(); break;
+    case 'arraybuffer':
+      responseData = await fetchResponse.arrayBuffer(); break;
+    case 'blob':
+      responseData = await fetchResponse.blob(); break;
+    case 'formdata':
+      responseData = await fetchResponse.formData(); break;
+    default: // json
+      responseData = await fetchResponse.json();
+  }
+
+  // Salva nello store (se abilitato)
+  saveToStore( module, endpoint, responseData);
+
+  return {
+    data: responseData,
+    status: fetchResponse.status,
+    statusText: fetchResponse.statusText,
+    headers: fetchResponse.headers,
+    config: config,
+  };}
 // ================== FINE FETCH ==================
 
 
