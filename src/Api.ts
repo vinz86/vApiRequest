@@ -98,7 +98,25 @@ export const api: ApiObject = {
         return await FetchClient<T>(config);
       }
     } catch (error: any) {
-      throw new Error(`Errore nella richiesta API: ${error}`);
+      // La richiesta è stata effettuata ma il server ha risposto con uno status di errore
+      if (error.response) {
+        console.error('Errore nella richiesta API:', error.response.status);
+
+        if (error.response.status === 404) {
+          console.error('Risorsa non trovata');
+        } else if (error.response.status === 500) {
+          console.error('Errore interno del server');
+        } else {
+          // Aggiungere ulteriori else if per gestire altri status
+        }
+      }
+      // La richiesta è stata effettuata ma non c'è stata risposta dal server
+      else if (error.request) {
+        console.error('Nessuna risposta dal server:', error.request);
+      } else {
+        console.error('Errore durante la preparazione della richiesta:', error.message);
+      }
+      throw error;
     }
   },
 
