@@ -1,7 +1,7 @@
 {
   "name": "vapirequest",
   "version": "1.0.2",
-  "description": "Centralizza le chiamate API",
+  "description": "Gestione delle chiamate API",
   "main": "index.ts",
   "scripts": {
     "test": "printMsg && exit 1"
@@ -17,8 +17,11 @@
   },
   "homepage": "https://github.com/vinz86/vApiRequest#readme",
   "dependencies": {
-    "vue": "^3.4.21",
     "axios": "^1.6.8",
-    "pinia": "^2.1.7"
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.10"
   }
 }

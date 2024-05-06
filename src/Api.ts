@@ -9,6 +9,17 @@ let apiPrefix: Environments = { dev: '', test: '', prod: '' }
 let apiBaseUrl: Environments = { dev: '', test: '', prod: '' }
 let apiEndpoints: Endpoint | null = null
 
+enum HttpStatus {
+  BadRequest = 400,
+  Unauthorized = 401,
+  Forbidden = 403,
+  NotFound = 404,
+  UnprocessableEntity = 422,
+  InternalServerError = 500,
+  BadGateway = 502,
+  ServiceUnavailable = 503,
+}
+
 export const api: ApiObject = {
   setDefaultClient(client: string): void {
     defaultClient = client
@@ -98,36 +109,32 @@ export const api: ApiObject = {
         return await FetchClient<T>(config)
       }
     } catch (error: any) {
-      // La richiesta è stata effettuata ma il server ha risposto con uno status di errore
-      if (error.response) {
-        console.error('Errore nella richiesta API:', error.response.status)
-        if (error.response.status === 400) {
-          console.error('Bad Request')
-        } else if (error.response.status === 401) {
-          console.error("Unauthorized")
-        } else if (error.response.status === 403) {
-          console.error('Forbidden')
-        } else if (error.response.status === 404) {
-          console.error('Not Found')
-        } else if (error.response.status === 422) {
-          console.error('Unprocessable Entity')
-        } else if (error.response.status === 500) {
-          console.error('Internal Server Error')
-        } else if (error.response.status === 502) {
-          console.error('Bad Gateway')
-        } else if (error.response.status === 503) {
-          console.error('Service Unavailable')
-        } else {
-          // Aggiungere ulteriori else if per gestire altri status
+      debugger
+      if (error.response && error.response.status) {
+        let errorMessage: string;
+        switch (error.response.status) {
+          case HttpStatus.BadRequest:
+            errorMessage =  'Bad Request'; break;
+          case HttpStatus.Unauthorized:
+            errorMessage = 'Unauthorized'; break;
+          case HttpStatus.Forbidden:
+            errorMessage = 'Forbidden'; break;
+          case HttpStatus.NotFound:
+            errorMessage = 'Not Found'; break;
+          case HttpStatus.UnprocessableEntity:
+            errorMessage = 'Unprocessable Entity'; break;
+          case HttpStatus.InternalServerError:
+            errorMessage = 'Internal Server Error'; break;
+          case HttpStatus.BadGateway:
+            errorMessage = 'Bad Gateway'; break;
+          case HttpStatus.ServiceUnavailable:
+            errorMessage = 'Service Unavailable'; break;
+          default:
+            errorMessage = 'Server Error'; break;
         }
+        console.error("Api Error:", errorMessage);
       }
-      // La richiesta è stata effettuata ma non c'è stata risposta dal server
-      else if (error.request) {
-        console.error('No response:', error.request)
-      } else {
-        console.error('Request error:', error.message)
-      }
-      throw error
+      //throw error
     }
   },
 
