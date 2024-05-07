@@ -41,58 +41,63 @@ export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiRespo
 
 // ================== FETCH ==================
 export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
+    const { method, data = null, pathParams = null, queryParams = null, headers = { }, module = 'default', responseType = null } = config;
+    let { endpoint } = config;
 
-  const { method, data = null, pathParams = null, queryParams = null, headers = { }, module = 'default', responseType = null } = config;
-  let { endpoint } = config;
+    // sostituisco i pathParams
+    if (pathParams) {
+      endpoint = replacePathParams(pathParams, endpoint)
+    }
 
-  // sostituisco i pathParams
-  if (pathParams) {
-    endpoint = replacePathParams(pathParams, endpoint)
-  }
+    //  sostituisco i queryParams
+    if (queryParams) {
+      endpoint =  replaceQueryParams(queryParams, endpoint);
+    }
+    const fetchOptions: RequestInit = {
+      method: method,
+      headers: headers
+    };
 
-  //  sostituisco i queryParams
-  if (queryParams) {
-    endpoint =  replaceQueryParams(queryParams, endpoint);
-  }
-  const fetchOptions: RequestInit = {
-    method: method,
-    headers: headers
-  };
+    // Se è GET o HEAD non mando il body
+    if (data && method!=="GET" && method !=="HEAD") {
+      fetchOptions.body = JSON.stringify(data);
+    }
 
-  // Se è GET o HEAD non mando il body
-  if (data && method!=="GET" && method !=="HEAD") {
-    fetchOptions.body = JSON.stringify(data);
-  }
+    const fetchResponse: any = await fetch(`${api.getCurrentApiBaseUrl()}${api.getCurrentApiPrefix()}${endpoint}`, fetchOptions);
 
-  const fetchResponse = await fetch(`${api.getCurrentApiBaseUrl()}${api.getCurrentApiPrefix()}${endpoint}`, fetchOptions);
+    //
+    if (fetchResponse && fetchResponse?.ok === false){
+        throw fetchResponse;
+    }
+    debugger
+    // Estraggo i dati dalla risposta
+    let responseData: any;
+    switch (responseType){
+      case 'json':
+        responseData = await fetchResponse.json(); break;
+      case 'xml':
+        responseData = await fetchResponse.text(); break;
+      case 'arraybuffer':
+        responseData = await fetchResponse.arrayBuffer(); break;
+      case 'blob':
+        responseData = await fetchResponse.blob(); break;
+      case 'formdata':
+        responseData = await fetchResponse.formData(); break;
+      default: // json
+        responseData = await fetchResponse.json();
+    }
 
-  // Estraggo i dati dalla risposta
-  let responseData: any;
-  switch (responseType){
-    case 'json':
-      responseData = await fetchResponse.json(); break;
-    case 'xml':
-      responseData = await fetchResponse.text(); break;
-    case 'arraybuffer':
-      responseData = await fetchResponse.arrayBuffer(); break;
-    case 'blob':
-      responseData = await fetchResponse.blob(); break;
-    case 'formdata':
-      responseData = await fetchResponse.formData(); break;
-    default: // json
-      responseData = await fetchResponse.json();
-  }
+    // Salva nello store (se abilitato)
+    saveToStore( module, endpoint, responseData);
 
-  // Salva nello store (se abilitato)
-  saveToStore( module, endpoint, responseData);
-
-  return {
-    data: responseData,
-    status: fetchResponse.status,
-    statusText: fetchResponse.statusText,
-    headers: fetchResponse.headers,
-    config: config,
-  };}
+    return {
+      data: responseData,
+      status: fetchResponse.status,
+      statusText: fetchResponse.statusText,
+      headers: fetchResponse.headers,
+      config: config,
+    };
+}
 // ================== FINE FETCH ==================
 
 

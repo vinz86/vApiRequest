@@ -98,35 +98,39 @@ export const api: ApiObject = {
         return await FetchClient<T>(config)
       }
     } catch (error: any) {
-      // La richiesta è stata effettuata ma il server ha risposto con uno status di errore
-      if (error.response) {
-        console.error('Errore nella richiesta API:', error.response.status)
-        if (error.response.status === 400) {
-          console.error('Bad Request')
-        } else if (error.response.status === 401) {
-          console.error("Unauthorized")
-        } else if (error.response.status === 403) {
-          console.error('Forbidden')
-        } else if (error.response.status === 404) {
-          console.error('Not Found')
-        } else if (error.response.status === 422) {
-          console.error('Unprocessable Entity')
-        } else if (error.response.status === 500) {
-          console.error('Internal Server Error')
-        } else if (error.response.status === 502) {
-          console.error('Bad Gateway')
-        } else if (error.response.status === 503) {
-          console.error('Service Unavailable')
+      let apiErrorMessage: string = "";
+      let apiErrorStatus: number|boolean = this.getDefaultClient() === "axios" ? error.response.status : error.status || false; // axios | fetch |false
+      // richiesta effettuata,il server ha risposto con un errore
+      if (apiErrorStatus) {
+        if (apiErrorStatus === 400) {
+          apiErrorMessage = 'Bad Request'
+        } else if (apiErrorStatus === 401) {
+          apiErrorMessage = "Unauthorized"
+        } else if (apiErrorStatus === 403) {
+          apiErrorMessage = 'Forbidden'
+        } else if (apiErrorStatus === 404) {
+          apiErrorMessage = 'Not Found'
+        } else if (apiErrorStatus === 422) {
+          apiErrorMessage = 'Unprocessable Entity'
+        } else if (apiErrorStatus === 500) {
+          apiErrorMessage = 'Internal Server Error'
+        } else if (apiErrorStatus === 502) {
+          apiErrorMessage = 'Bad Gateway'
+        } else if (apiErrorStatus === 503) {
+          apiErrorMessage = 'Service Unavailable'
         } else {
-          // Aggiungere ulteriori else if per gestire altri status
+          apiErrorMessage = 'Generic error'
         }
       }
-      // La richiesta è stata effettuata ma non c'è stata risposta dal server
+      // richiesta effettuata, nessuna risposta
       else if (error.request) {
-        console.error('No response:', error.request)
+        apiErrorMessage = 'No response'
       } else {
-        console.error('Request error:', error.message)
+        apiErrorMessage = 'Request error'
       }
+
+      console.error(`Errore api: ${(apiErrorStatus && apiErrorStatus)} ${apiErrorMessage}`)
+
       throw error
     }
   },
