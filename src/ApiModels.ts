@@ -1,21 +1,16 @@
-export interface Endpoint {
-  [key: string]: { [key: string]: string };
-}
-
-// Interfaccia per i parametri delle chiamate API
 export interface ApiRequestConfig {
   endpoint: string;
   method: 'GET' | 'HEAD' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
   data?: any;
   headers?: any;
-  module?: string;
   queryParams?: {};
   pathParams?: {};
+  module?: string;
   responseType?: string;
   responseEncoding?: string;
+  authenticate?: false;
 }
 
-// Definizione di ApiResponse generico
 export interface ApiResponse<T = any> {
   data: T;
   status: number;
@@ -24,17 +19,6 @@ export interface ApiResponse<T = any> {
   config: ApiRequestConfig;
 }
 
-// Interfaccia per i moduli
-export interface HttpModuleRequestConfig {
-  method?: 'GET' | 'HEAD' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
-  data?: any;
-  queryParams?: {};
-  pathParams?: {};
-  headers?: {};
-  module?: string; // per salvare nello store
-  responseType?: string;
-  responseEncoding?: string;
-}
 
 export interface Environments {
   dev?: string;
@@ -46,6 +30,10 @@ export interface DynamicModules {
   [moduleName: string]: any;
 }
 
+export interface Endpoint {
+  [key: string]: { [key: string]: string };
+}
+
 export interface ApiObject extends DynamicModules {
   setDefaultClient(client: string): void;
   getDefaultClient(): string;
@@ -53,12 +41,18 @@ export interface ApiObject extends DynamicModules {
   getDefaultEnvironment(): string;
   setApiBaseUrl(baseUrl: Environments): void;
   getApiBaseUrl(): Environments;
-  getCurrentApiBaseUrl(): string;
+  getCurrentEnvUrl(): string;
   setApiPrefix(prefix: Environments): void;
-  getCurrentApiPrefix(): string;
+  getCurrentEnvPrefix(): string;
   getApiPrefix(): Environments;
   setUseStore(flag: boolean): void;
   getEndpoint(name: string | void): string | void;
   getUrlParams(params: {}): string | undefined;
+  getTokenKey(): string;
+  setTokenKey(key: string): void;
+  getToken(): string;
+  setToken(token: string): void;
+
   request<T>(config: ApiRequestConfig): Promise<ApiResponse<T> | any>;
 }
+

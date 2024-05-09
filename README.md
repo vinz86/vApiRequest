@@ -79,12 +79,12 @@ Si possono usare diversi moduli per gestire le funzionalità delle chiamate API.
 Il modulo http fornisce metodi per effettuare chiamate HTTP CRUD.
 
 ```
-* get(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP GET.
-* head(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP HEAD.
-* post(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP POST.
-* patch(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP PATCH.
-* put(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP PUT.
-* delete(endpoint: string, config?: HttpModuleRequestConfig): Promise<T>: Effettua una richiesta HTTP DELETE.
+* get(endpoint: string, config?: ApiRequestConfig): Promise<T>: Effettua una richiesta HTTP GET.
+* head(endpoint: string, config?: ApiRequestConfig): Promise<T>: Effettua una richiesta HTTP HEAD.
+* post(endpoint: string, config?: ApiRequestConfig): Promise<T>: Effettua una richiesta HTTP POST.
+* patch(endpoint: string, config?: ApiRequestConfig): Promise<T>: Effettua una richiesta HTTP PATCH.
+* put(endpoint: string, config?: ApiRequestConfig): Promise<T>: Effettua una richiesta HTTP PUT.
+* delete(endpoint: string, config?: ApiRequestConfig): Promise<T>: Effettua una richiesta HTTP DELETE.
 ```
 
 ```typescript
@@ -141,25 +141,16 @@ app.use(ApiPlugin, {
 ```typescript
 // /modules/Todos.module.ts
 import { api } from 'vapirequest/Api'
-import type { HttpModuleRequestConfig } from 'vapirequest/ApiModels'
-import type { ApiResponse } from 'vapirequest/ApiModels'
+import type { ApiResponse, ApiRequestConfig } from 'vapirequest/ApiModels'
 
 export const todos = {
-
-  async getTodo<T>(config: HttpModuleRequestConfig = {}): Promise<ApiResponse<T>> {
-    const { queryParams = {}, pathParams = {}, headers = {}, module = 'todos' } = config;
-    return await api.request<T>({
-      endpoint: `/${api.getEndpoint("getTodo")}`,
-      method: 'GET',
-      queryParams: queryParams,
-      pathParams: pathParams,
-      data: null,
-      headers: headers,
-      module: module
-    });
-  },
-
+    async getTodo<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
+        config.endpoint = `/${api.getEndpoint("getTodo")}`;
+        config.method = 'GET';
+        return await api.request<T>(config);
+    },
 };
+
 ```
 ##### Endpoints (facoltativo)
 ``` typescript
@@ -203,6 +194,5 @@ useApiStore().getData({
 ```
 
 ## TODO
-* Gestione errori
 * Interceptors/Middlewares
 * Store per chiamate POST: gestire i parametri

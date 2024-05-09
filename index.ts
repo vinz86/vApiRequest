@@ -1,3 +1,6 @@
+import {ApiRequestConfig, ApiResponse} from "./src/ApiModels";
+import {api} from "./src/Api";
+
 export function showReadme() {
   let readmeHtml =  `
     <h1 id="documentazione">Documentazione</h1>
@@ -63,12 +66,12 @@ export function showReadme() {
     <p>Si possono usare diversi moduli per gestire le funzionalità delle chiamate API.</p>
     <h3 id="http">http</h3>
     <p>Il modulo http fornisce metodi per effettuare chiamate HTTP CRUD.</p>
-    <pre><code>* get(endpoint: string, config?: HttpModuleRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP GET.
-    * head(endpoint: string, config?: HttpModuleRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP HEAD.
-    * post(endpoint: string, config?: HttpModuleRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP POST.
-    * patch(endpoint: string, config?: HttpModuleRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP PATCH.
-    * put(endpoint: string, config?: HttpModuleRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP PUT.
-    * delete(endpoint: string, config?: HttpModuleRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP DELETE.
+    <pre><code>* get(endpoint: string, config?: ApiRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP GET.
+    * head(endpoint: string, config?: ApiRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP HEAD.
+    * post(endpoint: string, config?: ApiRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP POST.
+    * patch(endpoint: string, config?: ApiRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP PATCH.
+    * put(endpoint: string, config?: ApiRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP PUT.
+    * delete(endpoint: string, config?: ApiRequestConfig): Promise&lt;T&gt;: Effettua una richiesta HTTP DELETE.
     </code></pre>
     <h3 id="moduli-dinamici">Moduli Dinamici</h3>
     <p>E&#39; possibile creare ulteriori moduli dinamici e diversificare gli endpoints in base all&#39;ambiente:</p>
@@ -90,24 +93,14 @@ export function showReadme() {
     <h3 id="esempio-di-modulo">Esempio di modulo</h3>
     <pre><code class="language-typescript">// /modules/Todos.module.ts
     import { api } from &#39;vApiRequest/src/Api&#39;
-    import type { HttpModuleRequestConfig } from &#39;vApiRequest/src/ApiModels&#39;
-    import type { ApiResponse } from &#39;vApiRequest/src/ApiModels&#39;
+    import type { ApiResponse, ApiRequestConfig } from &#39;vApiRequest/src/ApiModels&#39;
     
     export const todos = {
-    
-      async getTodo&lt;T&gt;(config: HttpModuleRequestConfig = {}): Promise&lt;ApiResponse&lt;T&gt;&gt; {
-        const { queryParams = {}, pathParams = {}, headers = {}, module = &#39;todos&#39; } = config;
-        return await api.request&lt;T&gt;({
-          endpoint: api.getEndpoint( &quot; getTodo &quot;)},
-          method: &#39;GET&#39;,
-          queryParams: queryParams,
-          pathParams: pathParams,
-          data: null,
-          headers: headers,
-          module: module
-        });
+      async getTodo<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
+        config.endpoint = \`/${api.getEndpoint("getTodo")}\`;
+        config.method = 'GET';
+        return await api.request<T>(config);
       },
-    
     };
     </code></pre>
     <pre><code class="language-typescript">// /modules/Todos.endpoints.ts
