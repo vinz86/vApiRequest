@@ -17,7 +17,7 @@ export interface ApiPluginOptions {
 }
 
 const ApiPlugin = {
-  install(app: App, options: ApiPluginOptions): void {
+  install(app:any, options: ApiPluginOptions): void {
 
     if (options && options.defaultClient) {
       api.setDefaultClient(options.defaultClient);
