@@ -9,6 +9,7 @@ export interface ApiRequestConfig {
   responseType?: string;
   responseEncoding?: string;
   authenticate?: false;
+  action: string; // per SOAP
 }
 
 export interface ApiResponse<T = any> {
@@ -52,6 +53,7 @@ export interface ApiObject extends DynamicModules {
   setTokenKey(key: string): void;
   getToken(): string;
   setToken(token: string): void;
+  setAuthType(authType: string): void;
 
   request<T>(config: ApiRequestConfig): Promise<ApiResponse<T> | any>;
 }

@@ -4,12 +4,14 @@ Centralizza la gestione delle chiamate API nel progetto Vue.js.
 E' possibile configurare le chiamate API, gestire gli endpoint e utilizzare diversi client HTTP come Axios o Fetch.
 
 ## Installazione e Configurazione
+
+### VUE
 Installare il pacchetto 'vApiRequest' ed aggiungere il plugin del pacchetto in main.ts (o main.js).
 
 ``` typescript
 import { createApp } from 'vue';
 import App from './App.vue';
-import ApiPlugin from 'il-tuo-pacchetto';
+import ApiPlugin from 'vapirequest';
 import { moduloDinamico } from '@/modules/moduloDinamico/ModuloDinamico.module'
 import { moduloDinamicoEndpoints } from '@/modules/moduloDinamico/ModuloDinamico.endpoints'
 
@@ -25,6 +27,41 @@ app.use(ApiPlugin, {
 });
 
 app.mount('#app');
+```
+
+### NUXT
+Creare un Plugin Nuxt
+```typescript
+import { createApp } from 'vue';
+import ApiPlugin from 'vapirequest';
+import { moduloDinamico } from '@/modules/moduloDinamico/ModuloDinamico.module'
+import { moduloDinamicoEndpoints } from '@/modules/moduloDinamico/ModuloDinamico.endpoints'
+
+export default ({ app }, inject) => {
+    createApp().use(ApiPlugin, {
+        defaultClient: 'axios',
+        defaultEnvironment: 'dev',
+        useStore: false,
+        apiBaseUrl: { dev: 'http://localhost:5173', test: 'http://localhost:5173', prod: 'http://localhost:5173' },
+        apiPrefix: { dev: '', test: '', prod: '' },
+        modules: [{ name: 'moduloDinamico', module: moduloDinamico, endpoints: moduloDinamicoEndpoints }]
+    });
+    inject('api', ApiPlugin);
+};
+```
+#### Registrare il Plugin Nuxt
+
+Per utilizzare il plugin in Nuxt.js, devi registrarlo nel file di configurazione di Nuxt nuxt.config.js:
+```typescript
+// nuxt.config.js
+export default {
+    plugins: [
+        { 
+            src: '~/plugins/api-plugin.js', 
+            mode: 'client' // mode: 'client' se il plugin dipende da `window` o `document`
+        }
+    ]
+}
 ```
 
 ## Esempio di utilizzo
@@ -64,7 +101,7 @@ api.setApiBaseUrl({  //senza slash finale
   test: '',
   prod: 'http://localhost:80'
 });
-api.setDefaultClient('axios'); // axios | fetch
+api.setDefaultClient('axios'); // axios | FetchClient.ts
 api.setDefaultEnvironment('dev'); // dev | test | prod
 
 // ... chiamate api
