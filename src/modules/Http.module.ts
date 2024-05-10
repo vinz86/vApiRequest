@@ -97,9 +97,6 @@ export const http = {
 
 };
 
-/* Funzioni di supporto */
-
-
 /**
  * Imposta l'endpoint nella configurazione della richiesta.
  * Assicura che l'endpoint non sia vuoto e che inizi sempre con uno slash.

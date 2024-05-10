@@ -1,14 +1,15 @@
-import type { Endpoint } from './ApiModels';
+import type {Endpoint} from './ApiModels';
 
-// Endpoint statico
+/* Endpoint statici definiti per gli ambienti dev, test e prod */
 const staticEndpoints: Endpoint = {
-  testEndpoint: {
-    dev: 'test/{parametro1}',
-    test: 't_test',
-    prod: 't_prod',
-  },
+    testEndpoint: {
+        dev: 't_dev',
+        test: 't_test',
+        prod: 't_prod',
+    },
 };
 
+/* Tutti gli endpoint API, inclusi quelli statici e dinamici */
 export const apiEndpoints: Endpoint = {
-  ...staticEndpoints,
+    ...staticEndpoints,
 };

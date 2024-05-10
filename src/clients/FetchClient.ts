@@ -1,3 +1,8 @@
+/**
+ * Client Fetch per inviare richieste HTTP.
+ * @param config Configurazione della richiesta.
+ * @returns Una promessa con il risultato della richiesta.
+ */
 import { ApiRequestConfig, ApiResponse } from "../ApiModels";
 import { saveToStore, replaceQueryParams } from "../ApiUtils";
 
@@ -5,25 +10,30 @@ export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiRespo
     const { method, data = null, queryParams = null, headers = {}, module = 'default', responseType = null } = config;
     let { endpoint } = config;
 
+    // Sostituzione dei parametri nella query
     if (queryParams) {
         endpoint = replaceQueryParams(queryParams, endpoint);
     }
 
+    // Creazione delle opzioni di fetch
     const fetchOptions: RequestInit = {
         method: method,
         headers: headers
     };
 
+    // Aggiunta del corpo della richiesta se presente e se il metodo non è GET o HEAD
     if (data && method !== "GET" && method !== "HEAD") {
         fetchOptions.body = JSON.stringify(data);
     }
 
-    const fetchResponse: any = await fetch(endpoint, fetchOptions);
+    // Invio della richiesta fetch
+    const fetchResponse: Response = await fetch(endpoint, fetchOptions);
 
     if (fetchResponse && fetchResponse?.ok === false){
         throw fetchResponse;
     }
 
+    // Lettura della risposta in base al tipo di contenuto specificato
     let responseData: any;
     switch (responseType){
         case 'json': responseData = await fetchResponse.json(); break;
@@ -35,10 +45,11 @@ export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiRespo
             try {
                 responseData = await fetchResponse.json();
             } catch (error) {
-                throw new Error('Unable to determine response content type');
+                throw new Error('Impossibile determinare il tipo di contenuto della risposta');
             }
     }
 
+    // Salvataggio dei dati nello store
     saveToStore(module, endpoint, responseData);
 
     return {

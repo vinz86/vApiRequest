@@ -1,198 +1,300 @@
-import {http} from './modules/Http.module'
-import type {ApiObject, ApiRequestConfig, ApiResponse, Endpoint, Environments} from './ApiModels'
+/**
+ * Modulo principale per la gestione delle chiamate ai servizi.
+ */
+import type {ApiObject, ApiRequestConfig, ApiResponse, Endpoint, Environments} from './ApiModels';
 import {AxiosClient} from "./clients/AxiosClient";
 import {FetchClient} from "./clients/FetchClient";
 import {XHRClient} from "./clients/XHRClient";
 import {replacePathParams} from "./ApiUtils";
+import {http} from './modules/Http.module';
 
-let defaultClient: string = 'axios'
-let defaultEnvironment: string = 'dev'
-let useStore: boolean = false
-let apiPrefix: Environments = {dev: '', test: '', prod: ''}
-let apiBaseUrl: Environments = {dev: '', test: '', prod: ''}
-let apiEndpoints: Endpoint | null = null
-let tokenKey: string = "token"
+/* Variabili di configurazione predefinite per l'API. */
+let defaultClient: string = 'axios';
+let defaultEnvironment: string = 'dev';
+let useStore: boolean = false;
+let apiPrefix: Environments = {dev: '', test: '', prod: ''};
+let apiBaseUrl: Environments = {dev: '', test: '', prod: ''};
+let apiEndpoints: Endpoint | null = null;
+let tokenKey: string = "token";
 let autType: string = "jwt";
 
+/**
+ * Oggetto API con metodi per la configurazione e l'invio delle richieste.
+ */
 export const api: ApiObject = {
 
-    // defaultClient
+    /**
+     * Imposta il client HTTP
+     * @param client client HTTP: axios | fetch | xhr.
+     */
     setDefaultClient(client: string): void {
-        defaultClient = client
+        defaultClient = client;
     },
+
+    /**
+     * Restituisce il client HTTP
+     * @returns Client HTTP
+     */
     getDefaultClient(): string {
-        return defaultClient
+        return defaultClient;
     },
 
-    // authType
+    /**
+     * Imposta il tipo di autenticazione
+     * @param type Tipo di autenticazione
+     */
     setAuthType(type: string): void {
-        autType = type
+        autType = type;
     },
+
+    /**
+     * Restituisce il tipo di autenticazione
+     * @returns Tipo di autenticazione
+     */
     getAuthType(): string {
-        return autType
+        return autType;
     },
 
-    // tokenKey
+    /**
+     * Imposta la chiave del local storage per il token.
+     * @param key Chiave del local storage
+     */
     setTokenKey(key: string): void {
-        tokenKey = key
+        tokenKey = key;
     },
+
+    /**
+     * Restituisce la chiave del local storage per il token.
+     * @returns Chiave del local storage per il token
+     */
     getTokenKey(): string {
-        return tokenKey
+        return tokenKey;
     },
 
-    // Token
+    /**
+     * Restituisce il token salvato nel local storage
+     * @returns Token salvato nel local storage
+     */
     getToken(): string {
-        return localStorage.getItem(tokenKey) || ""
+        return localStorage.getItem(tokenKey) || "";
     },
+
+    /**
+     * Salva il token nel local storage
+     * @param token Token da salvare.
+     */
     setToken(token: string): void {
-        localStorage.setItem(tokenKey, token)
+        localStorage.setItem(tokenKey, token);
     },
 
-    // defaultEnvironment
+    /**
+     * Imposta l'ambiente per le richieste
+     * @param environment Ambiente da impostare.
+     */
     setDefaultEnvironment(environment: string): void {
-        defaultEnvironment = environment
+        defaultEnvironment = environment;
     },
+
+    /**
+     * Restituisce l'ambiente per le richieste
+     * @returns Ambiente predefinito per le richieste
+     */
     getDefaultEnvironment(): string {
-        return defaultEnvironment
+        return defaultEnvironment;
     },
 
-    // apiBaseUrl
+    /**
+     * Imposta il baseURL per le richieste API in base all'ambiente.
+     * @param baseUrl baseURL da impostare.
+     */
     setApiBaseUrl(baseUrl: Environments): void {
-        apiBaseUrl = baseUrl
-    },
-    getApiBaseUrl(): Environments {
-        return apiBaseUrl
+        apiBaseUrl = baseUrl;
     },
 
+    /**
+     * Restituisce baseURL per le richieste API in base all'ambiente.
+     * @returns baseURL per le richieste API in base all'ambiente.
+     */
+    getApiBaseUrl(): Environments {
+        return apiBaseUrl;
+    },
+
+    /**
+     * Restituisce baseURL corrente per le richieste API.
+     * @returns baseURL corrente per le richieste API.
+     */
     getCurrentEnvUrl(): string {
         if (defaultEnvironment in this.getApiBaseUrl()) {
-            return apiBaseUrl[defaultEnvironment as keyof Environments]
+            return apiBaseUrl[defaultEnvironment as keyof Environments];
         } else {
-            return ''
+            return '';
         }
     },
 
+    /**
+     * Imposta il prefisso dell'API per gli endpoint in base all'ambiente.
+     * @param prefix Prefisso dell'API da impostare.
+     */
     setApiPrefix(prefix: Environments): void {
-        apiPrefix = prefix
+        apiPrefix = prefix;
     },
 
+    /**
+     * Restituisce il prefisso dell'API corrente per gli endpoint in base all'ambiente
+     * @returns Prefisso dell'API corrente per gli endpoint in base all'ambiente
+     */
     getCurrentEnvPrefix(): string {
         if (this.getDefaultEnvironment() in this.getApiPrefix()) {
-            return apiPrefix[defaultEnvironment as keyof Environments]
+            return apiPrefix[defaultEnvironment as keyof Environments];
         } else {
-            return ''
+            return '';
         }
     },
 
+    /**
+     * Restituisce i prefissi dell'API per gli endpoint
+     * @returns I prefissi dell'API per gli endpoint
+     */
     getApiPrefix(): Environments {
-        return apiPrefix
+        return apiPrefix;
     },
 
+    /**
+     * Restituisce il flag che indica se utilizzare lo store per memorizzare i dati delle chiamate
+     * @returns True se lo store è abilitato, altrimenti false.
+     */
     getUseStore(): boolean {
-        return useStore
+        return useStore;
     },
 
+    /**
+     * Imposta il flag che indica se utilizzare lo store per memorizzare i dati delle chiamate api
+     * @param flag Flag da impostare.
+     */
     setUseStore(flag: boolean): void {
-        useStore = flag
+        useStore = flag;
     },
 
+    /**
+     * Restituisce tutti gli endpoint API configurati
+     * @returns Gli endpoint API configurati
+     */
     getEndpoints(): Endpoint {
-        return <Endpoint>apiEndpoints
+        return <Endpoint>apiEndpoints;
     },
 
+    /**
+     * Imposta gli endpoint API
+     * @param endpoints Endpoint API da impostare.
+     */
     setEndpoints(endpoints: any): void {
-        apiEndpoints = endpoints
+        apiEndpoints = endpoints;
     },
 
+    /**
+     * Restituisce l'endpoint API corrispondente al nome specificato.
+     * @param name Nome dell'endpoint.
+     * @returns L'endpoint API corrispondente al nome specificato.
+     * @throws Eccezione se l'endpoint non è valido o non è definito.
+     */
     getEndpoint(name: string | void): string | void {
         if (name && apiEndpoints && name in apiEndpoints && this.getDefaultEnvironment() in apiEndpoints[name]) {
-            return apiEndpoints[name][this.getDefaultEnvironment() as keyof Environments]
+            return apiEndpoints[name][this.getDefaultEnvironment() as keyof Environments];
         } else {
-            throw new Error('Endpoint non valido o non definito')
+            throw new Error('Endpoint non valido o non definito');
         }
     },
 
-    getUrlParams(params: {}) {
+    /**
+     * Restituisce i parametri dell'URL formattati come stringa.
+     * @param params Parametri dell'URL.
+     * @returns I parametri dell'URL formattati come stringa.
+     */
+    getUrlParams(params: {}): string | undefined {
         if (params && Object.keys(params).length > 0) {
-            return `?${new URLSearchParams(params).toString()}`
+            return `?${new URLSearchParams(params).toString()}`;
         }
     },
 
+    /**
+     * Invia una richiesta HTTP.
+     * @param config Configurazione della richiesta.
+     * @returns Promise con il risultato della richiesta.
+     */
     async request<T>(config: ApiRequestConfig): Promise<ApiResponse<T> | any> {
         try {
+            // Gestione della sostituzione dei parametri nell'endpoint
             const {pathParams = null} = config;
             let {endpoint} = config;
-
-            // Sostituisco i parametri nell'endpoint
             if (pathParams) {
-                endpoint = replacePathParams(pathParams, endpoint)
+                endpoint = replacePathParams(pathParams, endpoint);
             }
             config.endpoint = `${this.getCurrentEnvUrl()}${this.getCurrentEnvPrefix()}${endpoint}`;
 
-            // Verifico se la richiesta deve essere autenticata
+            // Gestione dell'autenticazione
             if (this.getToken() !== '' && config.authenticate) {
                 if (!config.headers) {
                     config.headers = {};
                 }
                 let tokenString: string = "";
                 if (this.getAuthType() === 'basic') {
-                    tokenString = `Basic ${this.getToken()}`
+                    tokenString = `Basic ${this.getToken()}`;
                 } else if (this.getAuthType() === 'jwt') {
-                    tokenString = `Bearer ${this.getToken()}`
+                    tokenString = `Bearer ${this.getToken()}`;
                 }
                 config.headers.Authorization = tokenString;
             } else if (this.getToken() === '' && config.authenticate) {
                 throw new Error('Token non definito');
             }
 
-            // Effettuo la richiesta con il client selezionato
+            // Invio della richiesta con il client selezionato
             if (this.getDefaultClient() === 'axios') {
-                return await AxiosClient<T>(config)
+                return await AxiosClient<T>(config);
             } else if (this.getDefaultClient() === 'fetch') {
-                return await FetchClient<T>(config)
+                return await FetchClient<T>(config);
             } else if (this.getDefaultClient() === 'xhr') {
-                return await XHRClient<T>(config)
+                return await XHRClient<T>(config);
             } else {
-                return await FetchClient<T>(config)
+                return await FetchClient<T>(config);
             }
         } catch (error: any) {
+            // Gestione degli errori di richiesta
             let apiErrorMessage: string = "";
-            let apiErrorStatus: number | boolean = this.getDefaultClient() === "axios" ? error.response.status : error.status || false; // axios | FetchClient.ts |false
-            // richiesta effettuata,il server ha risposto con un errore
+            let apiErrorStatus: number | boolean = this.getDefaultClient() === "axios" ? error.response.status : error.status || false;
             if (apiErrorStatus) {
                 if (apiErrorStatus === 400) {
-                    apiErrorMessage = 'Bad Request'
+                    apiErrorMessage = 'Bad Request';
                 } else if (apiErrorStatus === 401) {
-                    apiErrorMessage = "Unauthorized"
+                    apiErrorMessage = "Unauthorized";
                 } else if (apiErrorStatus === 403) {
-                    apiErrorMessage = 'Forbidden'
+                    apiErrorMessage = 'Forbidden';
                 } else if (apiErrorStatus === 404) {
-                    apiErrorMessage = 'Not Found'
+                    apiErrorMessage = 'Not Found';
                 } else if (apiErrorStatus === 422) {
-                    apiErrorMessage = 'Unprocessable Entity'
+                    apiErrorMessage = 'Unprocessable Entity';
                 } else if (apiErrorStatus === 500) {
-                    apiErrorMessage = 'Internal Server Error'
+                    apiErrorMessage = 'Internal Server Error';
                 } else if (apiErrorStatus === 502) {
-                    apiErrorMessage = 'Bad Gateway'
+                    apiErrorMessage = 'Bad Gateway';
                 } else if (apiErrorStatus === 503) {
-                    apiErrorMessage = 'Service Unavailable'
+                    apiErrorMessage = 'Service Unavailable';
                 } else {
-                    apiErrorMessage = 'Generic error'
+                    apiErrorMessage = 'Generic error';
                 }
-            }
-            // richiesta effettuata, nessuna risposta
-            else if (error.request) {
-                apiErrorMessage = 'No response'
+            } else if (error.request) {
+                apiErrorMessage = 'No response';
             } else {
-                apiErrorMessage = 'Request error'
+                apiErrorMessage = 'Request error';
             }
 
-            console.error(`Errore api: ${(apiErrorStatus && apiErrorStatus)} ${apiErrorMessage}`)
+            console.error(`Errore API: ${(apiErrorStatus && apiErrorStatus)} ${apiErrorMessage}`);
 
-            throw error
+            throw error;
         }
     },
 
-    // includo solo il modulo http, gli altri moduli verranno aggiunti tramite il plugin in modo dinamico
+    /**
+     * Includo il modulo HTTP per effettuare richieste CRUD, gli altri vengono aggiunti dinamicamente
+     */
     http
-}
+};

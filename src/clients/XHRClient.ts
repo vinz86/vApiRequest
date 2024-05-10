@@ -1,3 +1,8 @@
+/**
+ * Client XHR (XMLHttpRequest) per inviare richieste HTTP.
+ * @param config Configurazione della richiesta.
+ * @returns Una promessa con il risultato della richiesta.
+ */
 import { ApiRequestConfig, ApiResponse } from "../ApiModels";
 import { saveToStore, replaceQueryParams } from "../ApiUtils";
 
@@ -10,13 +15,16 @@ export async function XHRClient<T>(config: ApiRequestConfig): Promise<ApiRespons
         endpoint = replaceQueryParams(queryParams, endpoint);
     }
 
+    // Creazione di una nuova istanza di XMLHttpRequest
     const xhr = new XMLHttpRequest();
     xhr.open(method, endpoint, true);
 
+    // Aggiunta headers alla richiesta
     Object.keys(headers).forEach(header => {
         xhr.setRequestHeader(header, headers[header]);
     });
 
+    // Invio dei dati se presenti e se il metodo non è GET o HEAD
     if (data && method !== 'GET' && method !== 'HEAD') {
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify(data));
@@ -24,10 +32,12 @@ export async function XHRClient<T>(config: ApiRequestConfig): Promise<ApiRespons
         xhr.send();
     }
 
+    // Impostazione del tipo di risposta
     if (responseType) {
         xhr.responseType = responseType as XMLHttpRequestResponseType;
     }
 
+    // Gestione della promise
     return new Promise((resolve, reject) => {
         xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
@@ -47,12 +57,14 @@ export async function XHRClient<T>(config: ApiRequestConfig): Promise<ApiRespons
                         try {
                             responseData = JSON.parse(xhr.responseText);
                         } catch (error) {
-                            reject(new Error('Unable to determine response content type'));
+                            reject(new Error('Impossibile determinare il tipo di contenuto della risposta'));
                         }
                 }
 
+                // Salva dati nello store
                 saveToStore(module, endpoint, responseData);
 
+                // Risolve promise
                 resolve({
                     data: responseData,
                     status: xhr.status,
@@ -61,12 +73,13 @@ export async function XHRClient<T>(config: ApiRequestConfig): Promise<ApiRespons
                     config,
                 });
             } else {
-                reject(new Error(`Request failed with status ${xhr.status}`));
+                reject(new Error(`La richiesta ha restituito lo stato ${xhr.status}`));
             }
         };
 
+        // Gestione degli errori
         xhr.onerror = () => {
-            reject(new Error('Network error'));
+            reject(new Error('Errore di rete'));
         };
     });
 }

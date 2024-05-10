@@ -1,6 +1,11 @@
-import axios, {AxiosResponse} from 'axios';
-import {ApiRequestConfig, ApiResponse} from "../ApiModels";
-import {saveToStore} from "../ApiUtils";
+/**
+ * Client Axios per inviare richieste HTTP.
+ * @param config Configurazione della richiesta.
+ * @returns Promise con il risultato della richiesta.
+ */
+import axios, { AxiosResponse } from 'axios';
+import { ApiRequestConfig, ApiResponse } from "../ApiModels";
+import { saveToStore } from "../ApiUtils";
 
 export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
     const {
@@ -14,6 +19,7 @@ export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiRespo
         responseEncoding
     } = config;
 
+    // Invia la richiesta Axios
     const response: AxiosResponse<T> = await axios({
         method: method,
         url: endpoint,
@@ -24,6 +30,7 @@ export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiRespo
         responseEncoding: responseEncoding
     });
 
+    // Salva i dati nello store
     saveToStore(module, endpoint, response.data);
 
     return {
