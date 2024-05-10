@@ -4,7 +4,7 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import ApiPlugin from 'vapirequest/src/ApiPlugin'
+import ApiPlugin from 'vapirequest'
 import { todos } from '@/modules/todos/Todos.module'
 import { courses } from '@/modules/courses/Courses.module'
 import { coursesEndpoints } from '@/modules/courses/Courses.endpoints'
@@ -21,7 +21,9 @@ app.use(ApiPlugin, {
   useStore: false,
   apiBaseUrl: { dev: 'http://localhost:5173', test: 'http://localhost:5173', prod: 'http://localhost:5173' }, // senza slash finale
   apiPrefix: { dev: '', test: '', prod: ''}, // con slash iniziale
-  modules: [{ name: 'courses', module: courses, endpoints: coursesEndpoints }, { name: 'todos', module: todos, endpoints: todosEndpoints }]
+  modules: [{ name: 'courses', module: courses, endpoints: coursesEndpoints }, { name: 'todos', module: todos, endpoints: todosEndpoints }],
+  tokenKey: 'tokenApi',
+  authType: 'basic', // JWT || BASIC
 });
 
 app.mount('#app')

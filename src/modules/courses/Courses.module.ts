@@ -1,10 +1,9 @@
 import { api } from 'vapirequest/src/Api'
-import type { HttpModuleRequestConfig } from 'vapirequest/src/ApiModels'
-import type { ApiResponse } from 'vapirequest/src/ApiModels'
+import type { ApiResponse, ApiRequestConfig } from 'vapirequest/src/ApiModels'
 
 export const courses = {
 
-  async getCourses<T>(config: HttpModuleRequestConfig = {}): Promise<ApiResponse<T>> {
+  async getCourses<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
     const { headers = {}, module = 'courses' } = config;
     return await api.request<T>({
       endpoint: `/${api.getEndpoint("getCourses")}`,
@@ -15,7 +14,7 @@ export const courses = {
     });
   },
 
-  async getCourse<T>(config: HttpModuleRequestConfig = {}): Promise<ApiResponse<T>> {
+  async getCourse<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
     const { queryParams = {}, pathParams = {}, headers = {}, module = 'courses' } = config;
     return await api.request<T>({
       endpoint: `/${api.getEndpoint("getCourse")}`,
@@ -29,7 +28,7 @@ export const courses = {
     });
   },
 
-  async getCourseHtml<T>(endpoint: string, config: HttpModuleRequestConfig = {}): Promise<ApiResponse<T>> {
+  async getCourseHtml<T>(endpoint: string, config: ApiRequestConfig): Promise<ApiResponse<T>> {
     const { module = 'courses' } = config;
     console.log('getCourseHtml')
     return await api.request<T>({

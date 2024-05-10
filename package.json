@@ -1,5 +1,5 @@
 {
-  "name": "vapirequest",
+  "name": "vapirequest_app",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "pinia": "^2.1.7",
-    "vapirequest": "github:vinz86/vApiRequest#npm_pkg",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },
