@@ -1,45 +1,61 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 
+// modello: stato dello store
 interface ApiStoreState {
-  data: Record<string, Record<string, unknown>>;
+    data: Record<string, Record<string, unknown>>;
 }
 
+// Store Pinia per la gestione dei dati delle chiamate API
 export const useApiStore = defineStore('api', {
-  state: (): ApiStoreState => ({
-    data: {},
-  }),
-  actions: {
-    setData(config: {
-      module: string,
-      endpoint: string,
-      data: any
-    }): void {
-      const { module, endpoint, data } = config;
+    state: (): ApiStoreState => ({
+        data: {},
+    }),
+    actions: {
+        /**
+         * Salva i dati relativi a un endpoint per un modulo
+         * @param config Oggetto di configurazione contenente il modulo, l'endpoint e i dati da salvare.
+         */
+        setData(config: { module: string; endpoint: string; data: any }): void {
+            const {module, endpoint, data} = config;
 
-      if (!this.data[module]) {
-        this.data[module] = {};
-      }
-      const key = `${endpoint}`;
-      this.data[module][key] = data;
+            if (!this.data[module]) {
+                this.data[module] = {};
+            }
+            const key = `${endpoint}`;
+            this.data[module][key] = data;
+        },
+
+        /**
+         * Ottiene i dati relativi a un endpoint per un modulo
+         * @param config Oggetto di configurazione contenente il modulo e l'endpoint da cui ottenere i dati.
+         * @returns dati relativi all'endpoint specificato, se presenti, altrimenti undefined.
+         */
+        getData(config: { module: string; endpoint: string }): unknown {
+            const {module, endpoint} = config;
+            if (!this.data[module]) {
+                return undefined;
+            }
+            const key = `${endpoint}`;
+            return this.data[module][key];
+        },
+
+        /**
+         * Cancella i dati relativi a un modulo
+         * @param module Il nome del modulo di cui cancellare i dati.
+         */
+        clearData(module: string): void {
+            if (this.data[module]) {
+                delete this.data[module];
+            }
+        },
+
+        /**
+         * Ottiene tutti i dati relativi a un modulo
+         * @param module Nome del modulo di cui ottenere tutti i dati.
+         * @returns Oggetto contenente tutti i dati relativi al modulo specificato, se presenti, altrimenti undefined.
+         */
+        getAllData(module: string): Record<string, unknown> | undefined {
+            return this.data[module];
+        },
     },
-    getData(config: {
-      module: string,
-      endpoint: string,
-    }): unknown {
-      const { module, endpoint } = config; // Aggiunto module
-      if (!this.data[module]) {
-        return undefined;
-      }
-      const key = `${endpoint}`;
-      return this.data[module][key];
-    },
-    clearData(module: string): void {
-      if (this.data[module]) {
-        delete this.data[module];
-      }
-    },
-    getAllData(module: string): Record<string, unknown> | undefined {
-      return this.data[module];
-    },
-  },
 });

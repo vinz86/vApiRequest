@@ -1,73 +1,83 @@
-import type { App } from 'vue';
-import { api } from './Api';
-import type { Environments} from './ApiModels';
-import { useApiStore } from './ApiStore';
-import { ApiModuleRegistry } from './ApiModuleRegistry';
+import type {App} from 'vue';
+import {api} from './Api';
+import type {Environments} from './ApiModels';
+import {useApiStore} from './ApiStore';
+import {ApiModuleRegistry} from './ApiModuleRegistry';
 
+/**
+ * Interfaccia per le opzioni del plugin API.
+ */
 export interface ApiPluginOptions {
-  defaultClient: 'axios' | 'fetch';
-  defaultEnvironment: 'dev' | 'test' | 'prod';
-  useStore: boolean;
-  apiBaseUrl: Environments;
-  apiPrefix: Environments;
-  modules?: Array<any>;
-  token?: string;
-  tokenKey?: string;
-  authType?: string;
+    defaultClient: 'axios' | 'fetch'; // client HTTP predefinito
+    defaultEnvironment: 'dev' | 'test' | 'prod'; // Ambiente predefinito
+    useStore: boolean; // utilizza lo store per memorizzare i dati delle chiamate
+    apiBaseUrl: Environments; // baseUrl diviso per ambiente
+    apiPrefix: Environments; // prefisso url baseUrl diviso per ambiente
+    modules?: Array<any>; // Array di moduli aggiuntivi
+    token?: string; // Token di autenticazione
+    tokenKey?: string; // chiave local storage per il token
+    authType?: string; // Tipo di autenticazione (es. JWT, Basic)
 }
 
+/**
+ * Plugin per gestire la configurazione e l'utilizzo delle API.
+ */
 const ApiPlugin = {
-  install(app:any, options: ApiPluginOptions): void {
-
-    if (options && options.defaultClient) {
-      api.setDefaultClient(options.defaultClient);
-    }
-    if (options && options.defaultEnvironment) {
-      api.setDefaultEnvironment(options.defaultEnvironment);
-    }
-    if (options && options.useStore !== undefined) {
-      api.setUseStore(options.useStore);
-    }
-    if (options && options.apiBaseUrl) {
-      api.setApiBaseUrl(options.apiBaseUrl);
-    }
-    if (options && options.apiPrefix) {
-      api.setApiPrefix(options.apiPrefix);
-    }
-    if (options && options.token) {
-      api.setToken(options.token);
-    }
-    if (options && options.tokenKey) {
-      api.setTokenKey(options.tokenKey);
-    }
-    if (options && options.authType) {
-      api.setAuthType(options.authType);
-    }
-
-    // moduli dell'opzione modules
-    if (options && options.modules) {
-      options.modules.forEach(async (module) => {
-        api[module.name] = module.module;
-
-        // controllo se ha endpoint definiti
-        if (module.endpoints) {
-          // aggiungo endpoint alla raccolta globale
-          let newEndpoints = { ...api.getEndpoints(), ...module.endpoints};
-          api.setEndpoints(newEndpoints);
+    /**
+     * Installa il plugin API nell'applicazione Vue/Nuxt.
+     * @param app Istanza dell'applicazione Vue/Nuxt.
+     * @param options Opzioni di configurazione del plugin API.
+     */
+    install(app: App, options: ApiPluginOptions): void {
+        // Impostazione delle opzioni globali per l'API
+        if (options && options.defaultClient) {
+            api.setDefaultClient(options.defaultClient);
+        }
+        if (options && options.defaultEnvironment) {
+            api.setDefaultEnvironment(options.defaultEnvironment);
+        }
+        if (options && options.useStore !== undefined) {
+            api.setUseStore(options.useStore);
+        }
+        if (options && options.apiBaseUrl) {
+            api.setApiBaseUrl(options.apiBaseUrl);
+        }
+        if (options && options.apiPrefix) {
+            api.setApiPrefix(options.apiPrefix);
+        }
+        if (options && options.token) {
+            api.setToken(options.token);
+        }
+        if (options && options.tokenKey) {
+            api.setTokenKey(options.tokenKey);
+        }
+        if (options && options.authType) {
+            api.setAuthType(options.authType);
         }
 
-        // Aggiungo il modulo al registro delle estensioni
-        ApiModuleRegistry.register(module.name, module.module, module.endpoints);
-      });
-    }
+        // Gestione dei moduli aggiuntivi
+        if (options && options.modules) {
+            options.modules.forEach(async (module) => {
+                api[module.name] = module.module;
 
-    console.log('Api:', api);
+                // Controllo se sono definiti endpoint per il modulo
+                if (module.endpoints) {
+                    // Aggiunta degli endpoint alla raccolta globale
+                    let newEndpoints = {...api.getEndpoints(), ...module.endpoints};
+                    api.setEndpoints(newEndpoints);
+                }
 
-    app.config.globalProperties.$api = api;
-    app.config.globalProperties.$useApiStore = useApiStore;
-    app.provide('api', app.config.globalProperties.$api);
-    app.provide('useApiStore', app.config.globalProperties.$useApiStore);
-  },
+                // Registrazione del modulo nel registro delle estensioni
+                ApiModuleRegistry.register(module.name, module.module, module.endpoints);
+            });
+        }
+
+        // Aggiunta dell'API e dello store all'oggetto globalProperties dell'app
+        app.config.globalProperties.$api = api;
+        app.config.globalProperties.$useApiStore = useApiStore;
+        app.provide('api', app.config.globalProperties.$api);
+        app.provide('useApiStore', app.config.globalProperties.$useApiStore);
+    },
 };
 
 export default ApiPlugin;
