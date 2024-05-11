@@ -4,7 +4,7 @@ import {courses} from "@/modules/courses/Courses.module";
 import {coursesEndpoints} from "@/modules/courses/Courses.endpoints";
 import {todos} from "@/modules/todos/Todos.module";
 import {todosEndpoints} from "@/modules/todos/Todos.endpoints";
-import { objectToFixedLengthHash } from 'vapirequest/src/ApiUtils';
+import { objectToFixedLengthHash, generateStoreDataKey } from 'vapirequest/src/ApiUtils';
 
 const api: any = inject('api');
 const useApiStore: any = inject('useApiStore');
@@ -50,7 +50,7 @@ async function httpTest(callConfig: any) {
     let urlStoreGET = api.getRequestUrl('/posts/1', reqConfigGET.queryParams);
     let storeGET = useApiStore().getData({module: 'http', method: 'get', endpoint: urlStoreGET});
     console.log('  Risposta GET:', testGET);
-    console.log('  Key Store GET:', urlStoreGET+'-GET'+objectToFixedLengthHash(reqConfigGET.data || {} ))
+    console.log('  Key Store GET:', generateStoreDataKey(urlStoreGET, "GET", {}));
     console.log('  Store GET:', storeGET);
     console.log('');
 
@@ -71,7 +71,7 @@ async function httpTest(callConfig: any) {
       payload: reqConfigPOST.data
     });
     console.log('  Risposta POST:', testPOST);
-    console.log('  Key Store POST:', urlStorePOST+'-POST'+objectToFixedLengthHash(reqConfigPOST.data))
+    console.log('  Key Store POST:', generateStoreDataKey(urlStorePOST, "POST", reqConfigPOST.data || {}));
     console.log('  Store POST:', storePOST);
     console.log('');
 
@@ -86,7 +86,7 @@ async function httpTest(callConfig: any) {
       payload: reqConfigPATCH.data
     });
     console.log('  Risposta PATCH:', testPATCH);
-    console.log('  Key Store PATCH:', urlStorePATCH+'-PATCH'+objectToFixedLengthHash(reqConfigPOST.data))
+    console.log('  Key Store PATCH:', generateStoreDataKey(urlStorePATCH, "PATCH", reqConfigPATCH.data || {}));
     console.log('  Store PATCH:', storePATCH);
     console.log('');
 
@@ -101,7 +101,7 @@ async function httpTest(callConfig: any) {
       payload: reqConfigPUT.data
     });
     console.log('  Risposta PUT:', testPUT);
-    console.log('  Key Store PUT:', urlStorePUT+'-PUT'+objectToFixedLengthHash(reqConfigPOST.data))
+    console.log('  Key Store PUT:', generateStoreDataKey(urlStorePUT, "PUT", reqConfigPUT.data || {}));
     console.log('  Store PUT:', storePUT);
     console.log('');
 
