@@ -16,13 +16,18 @@ export const useApiStore = defineStore('api', {
          * Salva i dati relativi a un endpoint per un modulo
          * @param config Oggetto di configurazione contenente il modulo, l'endpoint e i dati da salvare.
          */
-        setData(config: { module: string; endpoint: string; data: any }): void {
-            const {module, endpoint, data} = config;
+        setData(config: { module: string; method: string; endpoint: string; data: any, payload: any }): void {
+            const {module, method, endpoint, data, payload} = config;
+
+            if(method==='HEAD' || method==='DELETE') {
+                return;
+            }
 
             if (!this.data[module]) {
                 this.data[module] = {};
             }
-            const key = `${endpoint}-${objectToFixedLengthHash(data)}`;
+
+            const key = `${endpoint}-${method.toUpperCase()}${objectToFixedLengthHash( payload || {} )}`;
             this.data[module][key] = data;
         },
 
@@ -31,12 +36,14 @@ export const useApiStore = defineStore('api', {
          * @param config Oggetto di configurazione contenente il modulo e l'endpoint da cui ottenere i dati.
          * @returns dati relativi all'endpoint specificato, se presenti, altrimenti undefined.
          */
-        getData(config: { module: string; endpoint: string; data: any }): unknown {
-            const {module, endpoint, data} = config;
+        getData(config: { module: string; method: string; endpoint: string; payload: any }): unknown {
+            const {module, method, endpoint, payload} = config;
             if (!this.data[module]) {
                 return undefined;
             }
-            const key = `${endpoint}-${objectToFixedLengthHash(data)}`;
+            //const key = `${endpoint}-${objectToFixedLengthHash(data)}`;
+            const key = `${endpoint}-${method.toUpperCase()}${objectToFixedLengthHash( payload || {} )}`;
+
             return this.data[module][key];
         },
 

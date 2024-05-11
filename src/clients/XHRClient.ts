@@ -5,9 +5,9 @@
  */
 import { ApiRequestConfig, ApiResponse } from "../ApiModels";
 import { saveToStore, replaceQueryParams } from "../ApiUtils";
+import {api} from "../Api";
 
 export async function XHRClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
-
     const { method, data = null, queryParams = null, headers = {}, module = 'default', responseType = null } = config;
     let endpoint = config.endpoint;
 
@@ -41,28 +41,31 @@ export async function XHRClient<T>(config: ApiRequestConfig): Promise<ApiRespons
     return new Promise((resolve, reject) => {
         xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
-                let responseData: any;
-                switch (responseType) {
-                    case 'json':
-                        responseData = JSON.parse(xhr.responseText);
-                        break;
-                    case 'xml':
-                        responseData = xhr.responseXML;
-                        break;
-                    case 'arraybuffer':
-                    case 'blob':
-                        responseData = xhr.response;
-                        break;
-                    default:
-                        try {
+                let responseData: any = "";
+                if(method !== "HEAD"){
+                    switch (responseType) {
+                        case 'json':
                             responseData = JSON.parse(xhr.responseText);
-                        } catch (error) {
-                            reject(new Error('Impossibile determinare il tipo di contenuto della risposta'));
-                        }
+                            break;
+                        case 'xml':
+                            responseData = xhr.responseXML;
+                            break;
+                        case 'arraybuffer':
+                        case 'blob':
+                            responseData = xhr.response;
+                            break;
+                        default:
+                            try {
+                                responseData = JSON.parse(xhr.responseText);
+                            } catch (error) {
+                                reject(new Error('Impossibile determinare il tipo di contenuto della risposta'));
+                            }
+                    }
                 }
 
                 // Salva dati nello store
-                saveToStore(module, endpoint, responseData);
+                let storeEndpoint = queryParams ? endpoint + api.getUrlParams(queryParams) : endpoint;
+                saveToStore(module, method, storeEndpoint, responseData, data || {});
 
                 // Risolve promise
                 resolve({

@@ -6,6 +6,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { ApiRequestConfig, ApiResponse } from "../ApiModels";
 import { saveToStore } from "../ApiUtils";
+import {api} from "../Api";
 
 export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
     const {
@@ -31,7 +32,8 @@ export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiRespo
     });
 
     // Salva i dati nello store
-    saveToStore(module, endpoint, response.data);
+    let storeEndpoint = queryParams ? endpoint + api.getUrlParams(queryParams) : endpoint;
+    saveToStore(module, method, storeEndpoint, response.data, data || {});
 
     return {
         data: response.data,

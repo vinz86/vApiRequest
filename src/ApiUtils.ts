@@ -4,15 +4,19 @@ import {useApiStore} from "./ApiStore";
 /**
  * Salva i dati nello store dell'API se abilitato.
  * @param module Nome del modulo.
+ * @param method method della chiamata.
  * @param endpoint Endpoint della richiesta.
+ * @param payload Payload (per le chiamate POST)
  * @param data Dati da salvare.
  */
-export function saveToStore(module: string, endpoint: string, data: any): void {
+export function saveToStore(module: string, method: string, endpoint: string, data: any, payload: any): void {
     if (useApiStore() && api.getUseStore() && module && endpoint && data) {
         useApiStore().setData({
             module: module,
+            method: method,
             endpoint: endpoint,
-            data: data
+            data: data,
+            payload: payload
         });
     }
 }
@@ -49,10 +53,11 @@ export function replaceQueryParams(queryParams: { [key: string]: any }, endpoint
 /**
  * Converte un oggetto JSON in un hash di lunghezza fissa.
  * @param obj Oggetto JSON da convertire in hash.
- * @param length Lunghezza dell'hash (default: 16)
+ * @param length Lunghezza dell'hash (default: 8)
  * @returns Hash di lunghezza fissa generato dall'oggetto.
  */
-export function objectToFixedLengthHash(obj: any = {}, length: number = 16): string {
+export function objectToFixedLengthHash(obj: any, length: number = 16): string {
+    obj = obj || {};
     const jsonString = JSON.stringify(obj);
     let hash = 0;
 
