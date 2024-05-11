@@ -11,7 +11,7 @@ export const http = {
      * @param config Configurazione della richiesta.
      * @returns Promise con il risultato della richiesta.
      */
-    async get<T>(endpoint: string, config: ApiRequestConfig = { endpoint: '' } as ApiRequestConfig): Promise<T> {
+    async get<T>(endpoint: string, config: ApiRequestConfig = {endpoint: ''} as ApiRequestConfig): Promise<T> {
         config.method = 'GET';
         setConfig(endpoint, config);
         return await api.request<T>(config);
@@ -29,7 +29,7 @@ export const http = {
     //   config.method = 'HEAD';
     //   return await api.request<T>(config);
     // },
-    async head<T>(endpoint: string, config: ApiRequestConfig = { endpoint: '' } as ApiRequestConfig): Promise<T> {
+    async head<T>(endpoint: string, config: ApiRequestConfig = {endpoint: ''} as ApiRequestConfig): Promise<T> {
         config.method = 'HEAD';
         config.module = 'http';
         setConfig(endpoint, config);
@@ -42,7 +42,7 @@ export const http = {
      * @param config Configurazione della richiesta.
      * @returns Promise con il risultato della richiesta.
      */
-    async post<T>(endpoint: string, config: ApiRequestConfig = { endpoint: '' } as ApiRequestConfig): Promise<T> {
+    async post<T>(endpoint: string, config: ApiRequestConfig = {endpoint: ''} as ApiRequestConfig): Promise<T> {
         config.method = 'POST';
         setConfig(endpoint, config);
         return await api.request<T>(config);
@@ -54,7 +54,7 @@ export const http = {
      * @param config Configurazione della richiesta.
      * @returns Promise con il risultato della richiesta.
      */
-    async put<T>(endpoint: string, config: ApiRequestConfig = { endpoint: '' } as ApiRequestConfig): Promise<T> {
+    async put<T>(endpoint: string, config: ApiRequestConfig = {endpoint: ''} as ApiRequestConfig): Promise<T> {
         config.method = 'PUT';
         setConfig(endpoint, config);
         return await api.request<T>(config);
@@ -66,7 +66,7 @@ export const http = {
      * @param config Configurazione della richiesta.
      * @returns Promise con il risultato della richiesta.
      */
-    async patch<T>(endpoint: string, config: ApiRequestConfig = { endpoint: '' } as ApiRequestConfig): Promise<T> {
+    async patch<T>(endpoint: string, config: ApiRequestConfig = {endpoint: ''} as ApiRequestConfig): Promise<T> {
         config.method = 'PATCH';
         setConfig(endpoint, config);
         return await api.request<T>(config);
@@ -78,7 +78,7 @@ export const http = {
      * @param config Configurazione della richiesta.
      * @returns Promise con il risultato della richiesta.
      */
-    async delete<T>(endpoint: string, config: ApiRequestConfig = { endpoint: '' } as ApiRequestConfig): Promise<T> {
+    async delete<T>(endpoint: string, config: ApiRequestConfig = {endpoint: ''} as ApiRequestConfig): Promise<T> {
         config.method = 'DELETE';
         setConfig(endpoint, config);
         return await api.request<T>(config);

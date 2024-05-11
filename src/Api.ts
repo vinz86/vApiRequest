@@ -287,7 +287,7 @@ export const api: ApiObject = {
             let apiErrorStatus: number | boolean = this.getDefaultClient() === "axios" ? error.response.status : error.status || false;
 
             // Controllo se si sono verificati degli errori durante la preparazione della richiesta
-            if ( errors.length>0 ) {
+            if (errors.length > 0) {
                 apiErrorMessage = 'Token non valido';
                 console.error(`Errore API: ${apiErrorMessage}`);
 

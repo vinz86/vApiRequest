@@ -3,13 +3,13 @@
  * @param config Configurazione della richiesta.
  * @returns Una promessa con il risultato della richiesta.
  */
-import { ApiRequestConfig, ApiResponse } from "../ApiModels";
-import { saveToStore, replaceQueryParams } from "../ApiUtils";
+import {ApiRequestConfig, ApiResponse} from "../ApiModels";
+import {saveToStore, replaceQueryParams} from "../ApiUtils";
 import {api} from "../Api";
 
 export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
-    const { method, data = null, queryParams = null, headers = {}, module = 'default', responseType = null } = config;
-    let { endpoint } = config;
+    const {method, data = null, queryParams = null, headers = {}, module = 'default', responseType = null} = config;
+    let {endpoint} = config;
 
     // Sostituzione dei parametri nella query
     if (queryParams) {
@@ -30,19 +30,29 @@ export async function FetchClient<T>(config: ApiRequestConfig): Promise<ApiRespo
     // Invio della richiesta fetch
     const fetchResponse: Response = await fetch(endpoint, fetchOptions);
 
-    if (fetchResponse && fetchResponse?.ok === false){
+    if (fetchResponse && fetchResponse?.ok === false) {
         throw fetchResponse;
     }
 
     // Lettura della risposta in base al tipo di contenuto specificato
     let responseData: any = "";
-    if(method !== "HEAD"){
-        switch (responseType){
-            case 'json': responseData = await fetchResponse.json(); break;
-            case 'xml': responseData = await fetchResponse.text(); break;
-            case 'arraybuffer': responseData = await fetchResponse.arrayBuffer(); break;
-            case 'blob': responseData = await fetchResponse.blob(); break;
-            case 'formdata': responseData = await fetchResponse.formData(); break;
+    if (method !== "HEAD") {
+        switch (responseType) {
+            case 'json':
+                responseData = await fetchResponse.json();
+                break;
+            case 'xml':
+                responseData = await fetchResponse.text();
+                break;
+            case 'arraybuffer':
+                responseData = await fetchResponse.arrayBuffer();
+                break;
+            case 'blob':
+                responseData = await fetchResponse.blob();
+                break;
+            case 'formdata':
+                responseData = await fetchResponse.formData();
+                break;
             default:
                 try {
                     responseData = await fetchResponse.json();

@@ -15,7 +15,7 @@ export const useApiStore = defineStore('api', {
         setData(config: { module: string; method: string; endpoint: string; data: any, payload: any }): void {
             const {module, method, endpoint, data, payload} = config;
 
-            if(method==='HEAD' || method==='DELETE') {
+            if (method === 'HEAD' || method === 'DELETE') {
                 return;
             }
 

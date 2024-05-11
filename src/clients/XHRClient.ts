@@ -3,12 +3,12 @@
  * @param config Configurazione della richiesta.
  * @returns Una promessa con il risultato della richiesta.
  */
-import { ApiRequestConfig, ApiResponse } from "../ApiModels";
-import { saveToStore, replaceQueryParams } from "../ApiUtils";
+import {ApiRequestConfig, ApiResponse} from "../ApiModels";
+import {saveToStore, replaceQueryParams} from "../ApiUtils";
 import {api} from "../Api";
 
 export async function XHRClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
-    const { method, data = null, queryParams = null, headers = {}, module = 'default', responseType = null } = config;
+    const {method, data = null, queryParams = null, headers = {}, module = 'default', responseType = null} = config;
     let endpoint = config.endpoint;
 
     if (queryParams) {
@@ -42,7 +42,7 @@ export async function XHRClient<T>(config: ApiRequestConfig): Promise<ApiRespons
         xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
                 let responseData: any = "";
-                if(method !== "HEAD"){
+                if (method !== "HEAD") {
                     switch (responseType) {
                         case 'json':
                             responseData = JSON.parse(xhr.responseText);

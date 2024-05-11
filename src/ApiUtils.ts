@@ -59,7 +59,7 @@ export function objectToFixedLengthHash(obj: any, length: number = 8): string {
     // (hash >>> 0): per garantire che hash sia trattato come un numero a 32 bit senza segno
     // toString(16): converte il numero in una stringa esadecimale con base 16.
     // padStart(8, '0'): aggiunge zeri iniziali alla stringa finché non raggiunge una lunghezza di 8 caratteri
-    return (hash >>> 0).toString(length*2).padStart(length, '0');
+    return (hash >>> 0).toString(length * 2).padStart(length, '0');
 }
 
 
@@ -90,8 +90,9 @@ export function saveToStore(module: string, method: string, endpoint: string, da
  * @param payload Payload (per le chiamate POST)
  * @return Stringa con la key del dato salvato (o da salvare) nello store
  */
-export function generateStoreDataKey(endpoint: string = "", method: string = '' , payload: any = {}): string {
+export function generateStoreDataKey(endpoint: string = "", method: string = '', payload: any = {}): string {
     if (useApiStore() && api.getUseStore() && endpoint) {
-        return `${endpoint}-${method.toUpperCase()}${objectToFixedLengthHash( payload || {} )}`;
-    } return "";
+        return `${endpoint}-${method.toUpperCase()}${objectToFixedLengthHash(payload || {})}`;
+    }
+    return "";
 }

@@ -3,9 +3,9 @@
  * @param config Configurazione della richiesta.
  * @returns Promise con il risultato della richiesta.
  */
-import axios, { AxiosResponse } from 'axios';
-import { ApiRequestConfig, ApiResponse } from "../ApiModels";
-import { saveToStore } from "../ApiUtils";
+import axios, {AxiosResponse} from 'axios';
+import {ApiRequestConfig, ApiResponse} from "../ApiModels";
+import {saveToStore} from "../ApiUtils";
 import {api} from "../Api";
 
 export async function AxiosClient<T>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
