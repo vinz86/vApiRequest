@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import { objectToFixedLengthHash } from "./ApiUtils";
+import {generateStoreDataKey} from "./ApiUtils";
 
 // modello: stato dello store
 interface ApiStoreState {
@@ -27,7 +27,7 @@ export const useApiStore = defineStore('api', {
                 this.data[module] = {};
             }
 
-            const key = `${endpoint}-${method.toUpperCase()}${objectToFixedLengthHash( payload || {} )}`;
+            const key = generateStoreDataKey(endpoint, method, payload);
             this.data[module][key] = data;
         },
 
@@ -41,8 +41,7 @@ export const useApiStore = defineStore('api', {
             if (!this.data[module]) {
                 return undefined;
             }
-            //const key = `${endpoint}-${objectToFixedLengthHash(data)}`;
-            const key = `${endpoint}-${method.toUpperCase()}${objectToFixedLengthHash( payload || {} )}`;
+            const key = generateStoreDataKey(endpoint, method, payload);
 
             return this.data[module][key];
         },
