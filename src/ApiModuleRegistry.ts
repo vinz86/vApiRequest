@@ -1,11 +1,4 @@
-/**
- * Interfaccia modulo API.
- */
-export interface ApiModule {
-    name: string; // Nome del modulo
-    module: any; // Oggetto del modulo API
-    endpoints: Record<string, any>; // Endpoint del modulo
-}
+import {ApiModule} from "./ApiModels";
 
 /**
  * Registro globale dei moduli API.

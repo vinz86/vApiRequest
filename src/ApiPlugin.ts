@@ -1,23 +1,8 @@
 import type {App} from 'vue';
 import {api} from './Api';
-import type {Environments} from './ApiModels';
+import type {ApiPluginOptions} from './ApiModels';
 import {useApiStore} from './ApiStore';
 import {ApiModuleRegistry} from './ApiModuleRegistry';
-
-/**
- * Interfaccia per le opzioni del plugin API.
- */
-export interface ApiPluginOptions {
-    defaultClient: 'axios' | 'fetch'; // client HTTP predefinito
-    defaultEnvironment: 'dev' | 'test' | 'prod'; // Ambiente predefinito
-    useStore: boolean; // utilizza lo store per memorizzare i dati delle chiamate
-    apiBaseUrl: Environments; // baseUrl diviso per ambiente
-    apiPrefix: Environments; // prefisso url baseUrl diviso per ambiente
-    modules?: Array<any>; // Array di moduli aggiuntivi
-    token?: string; // Token di autenticazione
-    tokenKey?: string; // chiave local storage per il token
-    authType?: string; // Tipo di autenticazione (es. JWT, Basic)
-}
 
 /**
  * Plugin per gestire la configurazione e l'utilizzo delle API.

@@ -1,10 +1,6 @@
 import {defineStore} from 'pinia';
 import {generateStoreDataKey} from "./ApiUtils";
-
-// modello: stato dello store
-interface ApiStoreState {
-    data: Record<string, Record<string, unknown>>;
-}
+import {ApiStoreState} from "./ApiModels";
 
 // Store Pinia per la gestione dei dati delle chiamate API
 export const useApiStore = defineStore('api', {
