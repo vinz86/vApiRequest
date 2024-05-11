@@ -140,6 +140,14 @@ export const api: ApiObject = {
     },
 
     /**
+     * Restituisce i prefissi dell'API per gli endpoint
+     * @returns I prefissi dell'API per gli endpoint
+     */
+    getApiPrefix(): Environments {
+        return apiPrefix;
+    },
+
+    /**
      * Restituisce il prefisso dell'API corrente per gli endpoint in base all'ambiente
      * @returns Prefisso dell'API corrente per gli endpoint in base all'ambiente
      */
@@ -149,14 +157,6 @@ export const api: ApiObject = {
         } else {
             return '';
         }
-    },
-
-    /**
-     * Restituisce i prefissi dell'API per gli endpoint
-     * @returns I prefissi dell'API per gli endpoint
-     */
-    getApiPrefix(): Environments {
-        return apiPrefix;
     },
 
     /**
@@ -217,11 +217,32 @@ export const api: ApiObject = {
     },
 
     /**
+     * Calcola l'url completo del servizio chiamato.
+     *
+     * N:B. Può essere usato per recuperare lo store, es:
+     * useApiStore().getData({
+     *       module: 'http',
+     *       endpoint: api.getRequestUrl('/posts', reqConfig.queryParams),
+     *       bodyParams: reqConfig.data
+     *     });
+     * @param endpoint endpoint (senza baseurl) es. /testEndpoint
+     * @param queryParams Oggetto con i parametri dell'url es {id:0, name:"Mario}
+     * @returns Stringa con url completo del servizio chiamato
+     */
+    getRequestUrl(endpoint: string, queryParams: any): string {
+        return this.getCurrentEnvUrl() +
+            this.getCurrentEnvPrefix() +
+            endpoint +
+            this.getUrlParams(queryParams);
+    },
+
+    /**
      * Invia una richiesta HTTP.
      * @param config Configurazione della richiesta.
      * @returns Promise con il risultato della richiesta.
      */
     async request<T>(config: ApiRequestConfig): Promise<ApiResponse<T> | any> {
+        let errors = [];
         try {
             // Gestione della sostituzione dei parametri nell'endpoint
             const {pathParams = null} = config;
@@ -243,8 +264,10 @@ export const api: ApiObject = {
                     tokenString = `Bearer ${this.getToken()}`;
                 }
                 config.headers.Authorization = tokenString;
-            } else if (this.getToken() === '' && config.authenticate) {
-                throw new Error('Token non definito');
+            } else if (this.getToken() === '') {
+                if (config.authenticate) {
+                    errors.push('Token non definito');
+                }
             }
 
             // Invio della richiesta con il client selezionato
@@ -261,6 +284,15 @@ export const api: ApiObject = {
             // Gestione degli errori di richiesta
             let apiErrorMessage: string = "";
             let apiErrorStatus: number | boolean = this.getDefaultClient() === "axios" ? error.response.status : error.status || false;
+
+            // Controllo se si sono verificati degli errori durante la preparazione della richiesta
+            if ( errors.length>0 ) {
+                apiErrorMessage = 'Token non valido';
+                console.error(`Errore API: ${apiErrorMessage}`);
+
+                throw error;
+            }
+
             if (apiErrorStatus) {
                 if (apiErrorStatus === 400) {
                     apiErrorMessage = 'Bad Request';

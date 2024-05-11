@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia';
+import { objectToFixedLengthHash } from "./ApiUtils";
 
 // modello: stato dello store
 interface ApiStoreState {
@@ -21,7 +22,7 @@ export const useApiStore = defineStore('api', {
             if (!this.data[module]) {
                 this.data[module] = {};
             }
-            const key = `${endpoint}`;
+            const key = `${endpoint}-${objectToFixedLengthHash(data)}`;
             this.data[module][key] = data;
         },
 
@@ -30,12 +31,12 @@ export const useApiStore = defineStore('api', {
          * @param config Oggetto di configurazione contenente il modulo e l'endpoint da cui ottenere i dati.
          * @returns dati relativi all'endpoint specificato, se presenti, altrimenti undefined.
          */
-        getData(config: { module: string; endpoint: string }): unknown {
-            const {module, endpoint} = config;
+        getData(config: { module: string; endpoint: string; data: any }): unknown {
+            const {module, endpoint, data} = config;
             if (!this.data[module]) {
                 return undefined;
             }
-            const key = `${endpoint}`;
+            const key = `${endpoint}-${objectToFixedLengthHash(data)}`;
             return this.data[module][key];
         },
 
@@ -57,5 +58,6 @@ export const useApiStore = defineStore('api', {
         getAllData(module: string): Record<string, unknown> | undefined {
             return this.data[module];
         },
+
     },
 });
