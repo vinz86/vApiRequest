@@ -73,6 +73,7 @@ const ApiPlugin = {
         }
 
         // Aggiunta dell'API e dello store all'oggetto globalProperties dell'app
+        console.log("===== API =====", api)
         app.config.globalProperties.$api = api;
         app.config.globalProperties.$useApiStore = useApiStore;
         app.provide('api', app.config.globalProperties.$api);

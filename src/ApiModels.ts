@@ -77,5 +77,7 @@ export interface ApiObject extends DynamicModules {
 
     setAuthType(authType: string): void;
 
+    getRequestUrl(endpoint: string, queryParams: object): string;
+
     request<T>(config: ApiRequestConfig): Promise<ApiResponse<T> | any>;
 }
