@@ -9,5 +9,10 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true
+  },
+  "paths": {
+    "#app": [
+      "./node_modules/nuxt3/dist/app/index"
+    ]
   }
 }
