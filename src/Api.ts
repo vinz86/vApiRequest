@@ -124,7 +124,7 @@ export const api: ApiObject = {
      * @returns baseURL corrente per le richieste API.
      */
     getCurrentEnvUrl(): string {
-        if (defaultEnvironment in this.getApiBaseUrl()) {
+        if (defaultEnvironment && (defaultEnvironment in this.getApiBaseUrl())) {
             return apiBaseUrl[defaultEnvironment as keyof Environments];
         } else {
             return '';
@@ -210,10 +210,10 @@ export const api: ApiObject = {
      * @param params Parametri dell'URL.
      * @returns I parametri dell'URL formattati come stringa.
      */
-    getUrlParams(params: {}): string | undefined {
+    getUrlParams(params: {}): string {
         if (params && Object.keys(params).length > 0) {
             return `?${new URLSearchParams(params).toString()}`;
-        }
+        } else return "";
     },
 
     /**
@@ -230,6 +230,7 @@ export const api: ApiObject = {
      * @returns Stringa con url completo del servizio chiamato
      */
     getRequestUrl(endpoint: string, queryParams: any): string {
+        queryParams = queryParams || {};
         return this.getCurrentEnvUrl() +
             this.getCurrentEnvPrefix() +
             endpoint +
