@@ -263,6 +263,68 @@ useApiStore().getData({
     payload: { payload: 'test' }
 });
 ```
+## UTILS
+
+Le utils incluse nel pacchetto aiutano a gestire diverse operazioni comuni nelle chiamate API.
+
+### replacePathParams
+Sostituisce i `pathParams` nell'endpoint con i valori forniti.
+
+```typescript
+import { replacePathParams } from 'vapirequest/utils';
+
+const pathParams = { id: '123' };
+const endpoint = '/api/todos/{id}';
+const replacedEndpoint = replacePathParams(pathParams, endpoint);
+// Risultato: '/api/todos/123'
+```
+
+### replaceQueryParams
+Aggiunge i queryParams all'endpoint.
+```typescript
+import { replaceQueryParams } from 'vapirequest/utils';
+
+const queryParams = { page: 1, limit: 10 };
+const endpoint = '/api/todos';
+const updatedEndpoint = replaceQueryParams(queryParams, endpoint);
+// Risultato: '/api/todos?page=1&limit=10'
+
+```
+
+### objectToFixedLengthHash
+Converte un oggetto JSON in un hash di lunghezza fissa.
+```typescriptimport { objectToFixedLengthHash } from 'vapirequest/utils';
+const obj = { key1: 'value1', key2: 'value2' };
+const hash = objectToFixedLengthHash(obj);
+// Esempio di risultato: 'a3c98b7e'
+
+```
+
+### saveToStore
+Salva i dati nello store dell'API se abilitato.
+```typescript
+import { saveToStore } from 'vapirequest/utils';
+
+const module = 'http';
+const method = 'GET';
+const endpoint = '/api/todos';
+const data = { todos: [...] };
+const payload = null;
+saveToStore(module, method, endpoint, data, payload);
+
+```
+
+### generateStoreDataKey
+Genera la chiave del dato salvato (o da salvare) nello store.
+```typescript
+import { generateStoreDataKey } from 'vapirequest/utils';
+
+const endpoint = '/api/todos';
+const method = 'GET';
+const payload = { page: 1, limit: 10 };
+const key = generateStoreDataKey(endpoint, method, payload);
+// Esempio di risultato: '/api/todos-GETa3c98b7e'
+```
 
 ## TODO
 * Soap Module
