@@ -3,4 +3,6 @@
  */
 import ApiPluginNuxt from "./src/plugins/ApiPluginNuxt";
 
-export default ApiPluginNuxt;
+// @ts-ignore
+export default defineNuxtPlugin(ApiPluginNuxt);
+
