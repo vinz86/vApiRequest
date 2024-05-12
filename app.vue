@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import {inject, onMounted} from 'vue'
-import {courses} from "@/modules/courses/Courses.module";
-import {coursesEndpoints} from "@/modules/courses/Courses.endpoints";
-import {todos} from "@/modules/todos/Todos.module";
-import {todosEndpoints} from "@/modules/todos/Todos.endpoints";
-import { objectToFixedLengthHash, generateStoreDataKey } from 'vapirequest/src/ApiUtils';
+import { onMounted} from 'vue'
+import { generateStoreDataKey } from 'vapirequest/src/ApiUtils';
+import {useNuxtApp} from "#app";
 
-const api: any = inject('api');
-const useApiStore: any = inject('useApiStore');
+const {$api, $useApiStore} = useNuxtApp();
 
 onMounted(async ()=> {
   const callConfig = {
@@ -35,20 +31,20 @@ async function httpTest(callConfig: any) {
     let reqConfigPATCH = {pathParams: {id: 1}, data: {postId: 1, appostId: 1}};
     let reqConfigPUT = {pathParams: {id: 1}, data: {postId: 1, rimpostId: 1}};
     let reqConfigDELETE = {pathParams: {id: 1}};
-
-    api.setDefaultClient(callConfig.defaultClient || 'fetch');
-    api.setUseStore(callConfig.useStore || true);
-    api.setDefaultEnvironment(callConfig.defaultEnvironment || true);
-    api.setApiBaseUrl(callConfig.apiBaseUrl || true);
-    api.setApiPrefix(callConfig.apiPrefix || true);
-    api.setTokenKey(callConfig.tokenKey || true);
-    api.setAuthType(callConfig.authType || true);
+debugger
+    $api.setDefaultClient(callConfig.defaultClient || 'fetch');
+    $api.setUseStore(callConfig.useStore || true);
+    $api.setDefaultEnvironment(callConfig.defaultEnvironment || true);
+    $api.setApiBaseUrl(callConfig.apiBaseUrl || true);
+    $api.setApiPrefix(callConfig.apiPrefix || true);
+    $api.setTokenKey(callConfig.tokenKey || true);
+    $api.setAuthType(callConfig.authType || true);
 
     // GET
     console.info('GET');
-    let testGET = await api.http.get('posts/{id}', reqConfigGET);
-    let urlStoreGET = api.getRequestUrl('/posts/1', reqConfigGET.queryParams);
-    let storeGET = useApiStore().getData({module: 'http', method: 'get', endpoint: urlStoreGET});
+    let testGET = await $api.http.get('posts/{id}', reqConfigGET);
+    let urlStoreGET = $api.getRequestUrl('/posts/1', reqConfigGET.queryParams);
+    let storeGET = $useApiStore().getData({module: 'http', method: 'get', endpoint: urlStoreGET});
     console.log('  Risposta GET:', testGET);
     console.log('  Key Store GET:', generateStoreDataKey(urlStoreGET, "GET", {}));
     console.log('  Store GET:', storeGET);
@@ -56,15 +52,15 @@ async function httpTest(callConfig: any) {
 
     // HEAD
     console.info('HEAD');
-    let testHEAD = await api.http.head('comments', reqConfigGET);
+    let testHEAD = await $api.http.head('comments', reqConfigGET);
     console.log('  Risposta HEAD:', testHEAD);
     console.log('');
 
     // POST
     console.info('POST');
-    let testPOST = await api.http.post('posts', reqConfigPOST);
-    let urlStorePOST = api.getRequestUrl('/posts');
-    let storePOST = useApiStore().getData({
+    let testPOST = await $api.http.post('posts', reqConfigPOST);
+    let urlStorePOST = $api.getRequestUrl('/posts');
+    let storePOST = $useApiStore().getData({
       module: 'http',
       method: 'post',
       endpoint: urlStorePOST,
@@ -77,9 +73,9 @@ async function httpTest(callConfig: any) {
 
     // PATCH
     console.info('PATCH');
-    let testPATCH = await api.http.patch('posts/{id}', reqConfigPATCH);
-    let urlStorePATCH = api.getRequestUrl('/posts/1');
-    let storePATCH = useApiStore().getData({
+    let testPATCH = await $api.http.patch('posts/{id}', reqConfigPATCH);
+    let urlStorePATCH = $api.getRequestUrl('/posts/1');
+    let storePATCH = $useApiStore().getData({
       module: 'http',
       method: 'patch',
       endpoint: urlStorePATCH,
@@ -92,9 +88,9 @@ async function httpTest(callConfig: any) {
 
     // PUT
     console.info('PUT');
-    let testPUT = await api.http.put('posts/{id}', reqConfigPUT);
-    let urlStorePUT = api.getRequestUrl('/posts/1');
-    let storePUT = useApiStore().getData({
+    let testPUT = await $api.http.put('posts/{id}', reqConfigPUT);
+    let urlStorePUT = $api.getRequestUrl('/posts/1');
+    let storePUT = $useApiStore().getData({
       module: 'http',
       method: 'put',
       endpoint: urlStorePUT,
@@ -107,22 +103,23 @@ async function httpTest(callConfig: any) {
 
     // DELETE
     console.info('DELETE');
-    let testDELETE = await api.http.delete('posts/{id}', reqConfigDELETE);
+    let testDELETE = await $api.http.delete('posts/{id}', reqConfigDELETE);
     console.log('  Risposta DELETE:', testDELETE);
     console.log('');
 
     // Tutti i dati dallo store
-    const testStoreAll = await useApiStore().getAllData('http')
+    const testStoreAll = await $useApiStore().getAllData('http')
     console.log('testStoreAll:', testStoreAll);
   }
   catch (error) {
     console.error(`Errore durante l'esecuzione di httpTest(callConfig)`, error);
   }
 }
-
 </script>
 
 <template>
-  <main>
-  </main>
+  <div>
+<!--    <NuxtWelcome />-->
+    test
+  </div>
 </template>
