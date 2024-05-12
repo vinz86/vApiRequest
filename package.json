@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/vinz86/vApiRequest#readme",
   "dependencies": {
+    "@nuxt/types": "^2.17.3",
     "axios": "^1.6.8",
     "pinia": "^2.1.7"
   }
