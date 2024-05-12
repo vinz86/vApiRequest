@@ -1,7 +1,7 @@
 {
   "name": "vapirequest",
-  "version": "1.0.2",
-  "description": "Centralizza le chiamate API",
+  "version": "1.1.0",
+  "description": "Pacchetto per gestire le chiamate API",
   "main": "index.ts",
   "scripts": {
     "test": "printMsg && exit 1"
