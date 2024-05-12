@@ -1,8 +1,8 @@
 import type {App} from 'vue';
-import {api} from './Api';
-import type {ApiPluginOptions} from './ApiModels';
-import {useApiStore} from './ApiStore';
-import {ApiModuleRegistry} from './ApiModuleRegistry';
+import {api} from '../Api';
+import type {ApiPluginOptions} from '../ApiModels';
+import {useApiStore} from '../ApiStore';
+import {ApiModuleRegistry} from '../ApiModuleRegistry';
 
 /**
  * Plugin per gestire la configurazione e l'utilizzo delle API.
