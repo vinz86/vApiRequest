@@ -229,8 +229,7 @@ export const api: ApiObject = {
      * @param queryParams Oggetto con i parametri dell'url es {id:0, name:"Mario}
      * @returns Stringa con url completo del servizio chiamato
      */
-    getRequestUrl(endpoint: string, queryParams: any): string {
-        queryParams = queryParams || {};
+    getRequestUrl(endpoint: string, queryParams: any = {}): string {
         return this.getCurrentEnvUrl() +
             this.getCurrentEnvPrefix() +
             endpoint +
