@@ -4,8 +4,8 @@ import { generateStoreDataKey } from 'vapirequest/src/ApiUtils';
 import type { ApiObject } from 'vapirequest/src/ApiModels';
 import {useNuxtApp} from "#app";
 
-const $api: ApiObject = useNuxtApp() as unknown as ApiObject;
-const $useApiStore = useNuxtApp() as unknown as any;
+const {$api} = useNuxtApp() as unknown as ApiObject;
+const {$useApiStore} = useNuxtApp() as unknown as any;
 
 onMounted(async ()=> {
   const callConfig = {
