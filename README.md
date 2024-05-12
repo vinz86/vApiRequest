@@ -30,42 +30,48 @@ app.mount('#app');
 ```
 
 ### NUXT
-Creare un Plugin Nuxt
-```typescript
-import { createApp } from 'vue';
-import ApiPlugin from 'vapirequest';
-import { moduloDinamico } from '@/modules/moduloDinamico/ModuloDinamico.module'
-import { moduloDinamicoEndpoints } from '@/modules/moduloDinamico/ModuloDinamico.endpoints'
 
-export default ({ app }, inject) => {
-    createApp().use(ApiPlugin, {
-        defaultClient: 'axios',
-        defaultEnvironment: 'dev',
-        useStore: false,
-        apiBaseUrl: { dev: 'http://localhost:5173', test: 'http://localhost:5173', prod: 'http://localhost:5173' },
-        apiPrefix: { dev: '', test: '', prod: '' },
-        modules: [{ name: 'moduloDinamico', module: moduloDinamico, endpoints: moduloDinamicoEndpoints }]
-    });
-    inject('api', ApiPlugin);
-};
-```
-#### Registrare il Plugin Nuxt
-
-Per utilizzare il plugin in Nuxt.js, devi registrarlo nel file di configurazione di Nuxt nuxt.config.js:
+Per utilizzare il pacchetto bisogna registrare il plugin in nuxt.config.js:
 ```typescript
 // nuxt.config.js
-export default {
+export default defineNuxtConfig({
     plugins: [
-        { 
-            src: '~/plugins/api-plugin.js', 
-            mode: 'client' // mode: 'client' se il plugin dipende da `window` o `document`
+        {
+            src: 'vapirequest/nuxt.ts',
+            mode: 'client'
         }
-    ]
-}
+    ],
+    // Configurazione di base del plugin API
+    runtimeConfig: {
+        api: {
+            defaultClient: 'fetch',
+            defaultEnvironment: 'dev',
+            useStore: false,
+            apiBaseUrl: {
+                dev: 'http://localhost:5173',
+                test: 'http://localhost:5173',
+                prod: 'http://localhost:5173'
+            },
+            apiPrefix: {
+                dev: '',
+                test: '',
+                prod: ''
+            },
+            modules: [
+            ],
+            tokenKey: 'tokenApi',
+            authType: 'basic' // JWT || BASIC
+        }
+    },
+    modules: [
+        '@pinia/nuxt', // Pinia serve per gestire lo store del pluginApi
+    ],
+})
 ```
 
 ## Esempio di utilizzo
 Una volta installato il plugin, è possibile utilizzare le funzionalità dell'API ovunque nell'applicazione.
+### VUE
 Ecco un esempio di come utilizzare l'API nei componenti Vue:
 
 ``` typescript
@@ -83,6 +89,26 @@ const fetchData = async () => {
   }
 };
 ```
+
+### NUXT
+Ecco un esempio per Nuxt:
+
+``` typescript
+import {useNuxtApp} from "#app";
+
+const {$api} = useNuxtApp();
+
+const fetchData = async () => {
+  try {
+    const response = await $api.http.get('/endpoint');
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
+```
+N.B. 'api' diventa '$api'. Se si utilizza il codice degli esempi bisogna adattarlo per
+utilizzare l'oggetto corretto.
 
 ### Modifica configurazione
 
@@ -217,19 +243,26 @@ Per utilizzare lo store, si può accedere alle funzionalità utilizzando l'hook 
 
 ```typescript
 const useApiStore: any = inject('useApiStore');
+// oppure per Nuxt:
+// const {useApiStore} = useNuxtApp();
 
+// Utilizzare con cautela
+// Le chiamate effettuate vengono salvate automaticamente nello store se useStore===true
 useApiStore().setData({
-  module: 'todos',
-  endpoint: 'getTodo',
-  data: todoData,
+    module: 'http',
+    method: 'GET',
+    endpoint: 'https://host/prefix/test/endpoint?param=1',
+    data: { data: 'test data' },
+    payload: { payload: 'test' }
 });
 
 useApiStore().getData({
-  module: 'todos',
-  endpoint: '/test/endpoint?param=1'
+    module: 'http',
+    method: 'GET',
+    endpoint: 'https://host/prefix/test/endpoint?param=1',
+    payload: { payload: 'test' }
 });
 ```
 
 ## TODO
-* Interceptors/Middlewares
-* Store per chiamate POST: gestire i parametri
+* Soap Module
