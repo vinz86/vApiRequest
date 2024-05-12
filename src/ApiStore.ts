@@ -28,7 +28,7 @@ export const useApiStore = defineStore('api', {
         },
 
         /**
-         * Ottiene i dati relativi a un endpoint per un modulo
+         * Ottiene i dati relativi a endpoint & metodo per un modulo
          * @param config Oggetto di configurazione contenente il modulo e l'endpoint da cui ottenere i dati.
          * @returns dati relativi all'endpoint specificato, se presenti, altrimenti undefined.
          */
