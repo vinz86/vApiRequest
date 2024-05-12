@@ -1,4 +1,4 @@
-import type { Endpoint } from 'vapirequest/src/ApiModels'
+import type { Endpoint } from '../../../src/ApiModels'
 
 export const todosEndpoints: Endpoint = {
   getTodo: {
