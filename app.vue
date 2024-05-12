@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onMounted} from 'vue'
 import { generateStoreDataKey } from 'vapirequest/src/ApiUtils';
+import type { ApiObject } from 'vapirequest/src/ApiModels';
 import {useNuxtApp} from "#app";
 
-const {$api, $useApiStore} = useNuxtApp();
+const $api: ApiObject = useNuxtApp() as unknown as ApiObject;
+const $useApiStore = useNuxtApp() as unknown as any;
 
 onMounted(async ()=> {
   const callConfig = {
@@ -31,7 +33,7 @@ async function httpTest(callConfig: any) {
     let reqConfigPATCH = {pathParams: {id: 1}, data: {postId: 1, appostId: 1}};
     let reqConfigPUT = {pathParams: {id: 1}, data: {postId: 1, rimpostId: 1}};
     let reqConfigDELETE = {pathParams: {id: 1}};
-debugger
+
     $api.setDefaultClient(callConfig.defaultClient || 'fetch');
     $api.setUseStore(callConfig.useStore || true);
     $api.setDefaultEnvironment(callConfig.defaultEnvironment || true);
@@ -59,7 +61,7 @@ debugger
     // POST
     console.info('POST');
     let testPOST = await $api.http.post('posts', reqConfigPOST);
-    let urlStorePOST = $api.getRequestUrl('/posts');
+    let urlStorePOST = $api.getRequestUrl('/posts', {});
     let storePOST = $useApiStore().getData({
       module: 'http',
       method: 'post',
@@ -74,7 +76,7 @@ debugger
     // PATCH
     console.info('PATCH');
     let testPATCH = await $api.http.patch('posts/{id}', reqConfigPATCH);
-    let urlStorePATCH = $api.getRequestUrl('/posts/1');
+    let urlStorePATCH = $api.getRequestUrl('/posts/1', {});
     let storePATCH = $useApiStore().getData({
       module: 'http',
       method: 'patch',
@@ -89,7 +91,7 @@ debugger
     // PUT
     console.info('PUT');
     let testPUT = await $api.http.put('posts/{id}', reqConfigPUT);
-    let urlStorePUT = $api.getRequestUrl('/posts/1');
+    let urlStorePUT = $api.getRequestUrl('/posts/1', {});
     let storePUT = $useApiStore().getData({
       module: 'http',
       method: 'put',
@@ -120,6 +122,6 @@ debugger
 <template>
   <div>
 <!--    <NuxtWelcome />-->
-    test
+   Guarda la console (F12)
   </div>
 </template>
