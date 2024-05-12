@@ -76,7 +76,7 @@ export const api: ApiObject = {
      * @returns Token salvato nel local storage
      */
     getToken(): string {
-        return localStorage.getItem(tokenKey) || "";
+        return localStorage?.getItem(tokenKey) || "";
     },
 
     /**
@@ -283,7 +283,7 @@ export const api: ApiObject = {
         } catch (error: any) {
             // Gestione degli errori di richiesta
             let apiErrorMessage: string = "";
-            let apiErrorStatus: number | boolean = this.getDefaultClient() === "axios" ? error.response.status : error.status || false;
+            let apiErrorStatus: number | boolean = this.getDefaultClient() === "axios" ? error?.response?.status : error?.status || false;
 
             // Controllo se si sono verificati degli errori durante la preparazione della richiesta
             if (errors.length > 0) {
