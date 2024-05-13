@@ -8,12 +8,12 @@ import {useApiStore} from "./ApiStore";
  * @returns Endpoint con i parametri sostituiti.
  */
 export function replacePathParams(pathParams: { [key: string]: string }, endpoint: string): string {
-    if (pathParams && Object.keys(pathParams).length > 0) {
+    if (endpoint && pathParams && Object.keys(pathParams).length > 0) {
         Object.entries(pathParams).forEach(([key, value]) => {
             endpoint = endpoint.replace(`{${key}}`, encodeURIComponent(value));
         });
     }
-    return endpoint;
+    return endpoint || "";
 }
 
 /**
@@ -27,7 +27,7 @@ export function replaceQueryParams(queryParams: { [key: string]: any }, endpoint
         const queryParamsString = new URLSearchParams(queryParams).toString();
         endpoint = `${endpoint}?${queryParamsString}`;
     }
-    return endpoint;
+    return endpoint || "";
 }
 
 /**
@@ -38,7 +38,8 @@ export function replaceQueryParams(queryParams: { [key: string]: any }, endpoint
  */
 export function objectToFixedLengthHash(obj: any, length: number = 8): string {
     obj = obj || {};
-    const jsonString = JSON.stringify(obj);
+    const sortedObj = sortObjectProperties(obj);
+    const jsonString = JSON.stringify(sortedObj);
     let hash = 0;
 
     // Se la stringa è vuota, restituisce hash '{}'
@@ -62,6 +63,27 @@ export function objectToFixedLengthHash(obj: any, length: number = 8): string {
     return (hash >>> 0).toString(length * 2).padStart(length, '0');
 }
 
+/**
+ * Ordina le proprietà di un oggetto in ordine alfabetico.
+ *
+ * @param {Object} obj - L'oggetto da ordinare
+ * @returns {Object} - Un nuovo oggetto con le proprietà ordinate in ordine alfabetico.
+ */
+function sortObjectProperties(obj: any): any {
+    /**
+     * @type {Object}
+     * Un nuovo oggetto con le proprietà ordinate.
+     */
+    const sorted: any = {};
+
+    // Ordina le chiavi dell'oggetto in ordine alfabetico e per ciascuna chiave,
+    // assegna il valore corrispondente al nuovo oggetto ordinato.
+    Object.keys(obj).sort().forEach(key => {
+        sorted[key] = obj[key];
+    });
+
+    return sorted;
+}
 
 /**
  * Salva i dati nello store dell'API se abilitato.
